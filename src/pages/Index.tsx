@@ -1,13 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import { Provider } from 'react-redux';
+import { store } from '@/store/store';
+import Header from '@/components/Header';
+import Hero from '@/components/Hero';
+import TreatmentSection from '@/components/TreatmentSection';
+import ExpectationSection from '@/components/ExpectationSection';
+import StatsSection from '@/components/StatsSection';
+import TestimonialSection from '@/components/TestimonialSection';
+import CTASection from '@/components/CTASection';
+import Footer from '@/components/Footer';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <Provider store={store}>
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main>
+          <Hero />
+          <TreatmentSection />
+          <ExpectationSection />
+          <StatsSection />
+          <TestimonialSection />
+          <CTASection />
+        </main>
+        <Footer />
       </div>
-    </div>
+    </Provider>
   );
 };
 
