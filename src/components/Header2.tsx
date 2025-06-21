@@ -62,7 +62,7 @@ const Header = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className={`absolute left-0 md:hidden ${isScrolled?'text-orange-10':'text-white'}`}>
+          <div className={`absolute left-0 md:hidden text-primary`}>
             <button
               onClick={() => dispatch(toggleMobileMenu())}
               className="p-2 transition-colors duration-200 "

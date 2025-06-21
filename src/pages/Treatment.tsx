@@ -159,7 +159,7 @@ const Treatment = () => {
       </section>
 
       {/* Treatment Process Section */ }
-      <div className='container lg:max-w-6xl xl:max-w-7xl max-md:px-4'>
+      <div className='container max-md:px-4'>
         <section className="py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden mx-auto bg-gray-100 gap-6 rounded-3xl">
             <img src='/img/medicationS02_image.png' className='h-full object-cover max-md:order-1'/>
