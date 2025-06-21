@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 
 const Hero = () => {
   return (
-    <section className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-700 flex items-center pt-16">
+    <section className="min-h-screen bg-gradient-to-br from-[rgb(41,8,82)] via-purple-800 to-purple-700 flex items-center pt-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}

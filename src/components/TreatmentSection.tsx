@@ -11,7 +11,7 @@ const TreatmentSection = () => {
 
           {/* Right - Content */}
           <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-purple-900">
+            <h2 className="text-3xl md:text-4xl font-bold text-[rgb(41,8,82)]">
               Tratamentos de acordo com as novas normas da ANVISA
             </h2>
             <div className="space-y-4 text-gray-600">
