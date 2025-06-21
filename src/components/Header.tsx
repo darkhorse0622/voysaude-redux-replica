@@ -14,11 +14,11 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const navigationItems = [
-    { name: 'Como funciona', href: '#como-funciona' },
-    { name: 'Tratamentos', href: '#tratamentos' },
-    { name: 'Especialistas', href: '#especialistas' },
-    { name: 'Resultados', href: '#resultados' },
-    { name: 'Recursos', href: '#recursos' },
+    { name: 'Como funciona', href: '/' },
+    { name: 'Tratamentos', href: '/treatments' },
+    { name: 'Especialistas', href: '/especialistas' },
+    { name: 'Resultados', href: '/resultados' },
+    { name: 'Recursos', href: '/recursos' },
   ];
 
   useEffect(() => {
@@ -44,12 +44,12 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden w-full md:flex space-x-8">
+          <nav className="hidden md:flex space-x-8 mr-auto">
             {navigationItems.map((item) => (
               <a
                 key={item.name}
-                href={item.href}
-                className={`transition-colors duration-200 font-medium ${
+                onClick={() => navigate(item.href)}
+                className={`cursor-pointer transition-colors duration-200 font-medium ${
                   isScrolled 
                     ? 'text-gray-900 hover:text-orange-500' 
                     : 'text-white hover:text-orange-300'
