@@ -32,13 +32,11 @@ const Header = () => {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300`}>
-      <div className="border-b border-b-gray-100/50">
-        <div className={ ` flex justify-center md:justify-start items-center h-16 ${isScrolled?'bg-white':'bg-primary'}` }>
+      <div className="border-b border-b-gray-400/50">
+        <div className={ ` flex justify-center md:justify-start items-center h-16 ${isScrolled?'bg-white':'text-orange-10'}` }>
           {/* Logo */}
           <div className="relative flex items-center">
-            <a className={ `cursor-pointer  font-bold text-3xl px-8 rounded-lg ${
-              isScrolled?'text-primary':'text-white'
-            }`} onClick={()=>navigate("/")}>
+            <a className={ `cursor-pointer  font-bold text-3xl px-8 rounded-lg  text-primary`} onClick={()=>navigate("/")}>
               voy
             </a>
           </div>
@@ -49,11 +47,7 @@ const Header = () => {
               <a
                 key={item.name}
                 onClick={() => navigate(item.href)}
-                className={`cursor-pointer transition-colors duration-200 font-medium ${
-                  isScrolled 
-                    ? 'text-primary hover:text-orange-500' 
-                    : 'text-white hover:text-orange-300'
-                }`}
+                className={`cursor-pointer transition-colors duration-200 font-medium text-primary hover:text-orange-500`}
               >
                 {item.name}
               </a>
@@ -62,17 +56,13 @@ const Header = () => {
 
           {/* Desktop Login Button */}
           <div className="hidden md:flex items-center space-x-4 pr-8">
-            <a className={`cursor-pointer transition-colors duration-200 ${
-              isScrolled 
-                ? 'text-primary hover:text-orange-500' 
-                : 'text-white hover:text-orange-300'
-            }`}>
+            <a className={`cursor-pointer transition-colors duration-200 text-primary hover:text-orange-500`}>
               Entrar
             </a>
           </div>
 
           {/* Mobile menu button */}
-          <div className={`absolute left-0 md:hidden ${isScrolled?'text-primary':'text-white'}`}>
+          <div className={`absolute left-0 md:hidden ${isScrolled?'text-orange-10':'text-white'}`}>
             <button
               onClick={() => dispatch(toggleMobileMenu())}
               className="p-2 transition-colors duration-200 "

@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import Header from '@/components/Header';
+import Header2 from '@/components/Header2';
 import Footer from '@/components/Footer';
 
 const Treatment = () => {
@@ -119,11 +119,11 @@ const Treatment = () => {
 
   return (
     <div className="min-h-screen bg-background text-primary">
-      <Header/>
+      <Header2/>
       
       {/* Hero Section */}
       <section className="min-h-screen bg-orange-100 flex items-center pt-32 pb-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto sm:px-4 lg:px-8 max-md:px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="text-primary space-y-6 animate-fade-in">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
@@ -159,8 +159,8 @@ const Treatment = () => {
       </section>
 
       {/* Treatment Process Section */ }
-      <div className='container lg:max-w-6xl  xl:max-w-7xl'>
-        <section className="py-16 mx-4">
+      <div className='container lg:max-w-6xl xl:max-w-7xl max-md:px-4'>
+        <section className="py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden mx-auto bg-gray-100 gap-6 rounded-3xl">
             <img src='/img/medicationS02_image.png' className='h-full object-cover max-md:order-1'/>
             <div className="flex flex-col  justify-center item my-8 mx-6">
@@ -178,9 +178,9 @@ const Treatment = () => {
         </section>
 
         {/* GLP-1 Information Section */}
-        <section className="md:py-16">
+        <section >
           <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden mx-auto gap-6 rounded-3xl">
-            <div className="space-y-6 py-6 md:px-6">
+            <div className="space-y-6 py-6 ">
               <h2 className="text-3xl md:text-4xl md:pt-24 font-bold text-primary">
                 O que são os tratamentos com GLP-1?
               </h2>
@@ -207,8 +207,8 @@ const Treatment = () => {
         </section>
 
         {/* Card Approach Section */}
-        <section className="py-16 bg-white">
-          <div className="mx-auto px-4">
+        <section className="pt-16 bg-white">
+          <div className="mx-auto">
             <div className="mb-8">
               <span className='text-primary text-xs font-bold'>TRATAMENTOS</span>
               <h2 className="text-3xl md:text-4xl font-bold text-primary mt-2 mb-4">
@@ -234,8 +234,8 @@ const Treatment = () => {
         </section>
 
         {/* Science Stats Section */}
-        <section className="md:py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className='pt-16'>
+          <div className="container mx-auto px-0">
             <div className="mb-8">
               <span className='text-primary text-xs font-bold'>POR TRÁS DA CIÊNCIA</span>
               <h2 className="text-3xl md:text-4xl font-bold text-primary mt-2 mb-4">
@@ -248,7 +248,7 @@ const Treatment = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-8">
               {medican.map((stat, index) => (
-                <div key={index} className="bg-gray-50 rounded-2xl p-8 shadow-lg">
+                <div key={index} className="bg-gray-50 rounded-2xl p-4 md:p-8 shadow-lg">
                   {stat.image}
                   <h3 className="text-lg font-bold text-primary my-3">
                     {stat.title}
@@ -263,8 +263,8 @@ const Treatment = () => {
         </section>
 
         {/* Por trás da ciência Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className='pt-16'>
+          <div className="container mx-auto px-0">
             <div className="mb-16">
               <span className='text-primary text-xs font-bold'>POR TRÁS DA CIÊNCIA</span>
               <h2 className="text-3xl md:text-4xl font-bold text-primary mt-2 mb-4">
@@ -274,7 +274,7 @@ const Treatment = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {scienceStats.map((stat, index) => (
-                <div key={index} className="rounded-2xl p-8">
+                <div key={index} className="rounded-2xl">
                   {stat.image}
                   <h3 className="text-lg font-bold text-primary my-3">
                     {stat.title}
@@ -289,8 +289,8 @@ const Treatment = () => {
         </section>
 
         {/* Testimonial Section */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="pt-16 bg-white">
+          <div className="mx-auto">
             <div className="flex flex-col md:flex-row gap-24 items-center">
               <img
                 src="/img/Image.webp"
@@ -298,7 +298,7 @@ const Treatment = () => {
                 className="h-full object-cover rounded-lg"
               />
               <div className="space-y-6">
-                <p className="text-3xl text-gray-700 leading-relaxed">
+                <p className="text-3xl eading-relaxed">
                   “Na Voy conseguimos oferecer um cuidado mais eficiente porque eliminamos burocracia. Isso faz toda a diferença na jornada dos pacientes.”
                 </p>
                 <div>
@@ -311,8 +311,8 @@ const Treatment = () => {
         </section>
 
         {/* FAQ Section */}
-        <section className="md:py-16">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-16">
+          <div className="mx-auto px-0">
             <div className="mb-8">
               <h2 className="text-xs">
                FAQ
