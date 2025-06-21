@@ -67,25 +67,7 @@ const TestimonialSection = () => {
               {testimonials.map((testimonial) => (
                 <CarouselItem key={testimonial.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                   <div className="bg-gray-50 rounded-2xl p-6 h-full flex flex-col">
-                    <div className="flex items-center mb-4">
-                      <img
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        className="w-16 h-16 rounded-full object-cover mr-4"
-                      />
-                      <div>
-                        <h3 className="font-semibold text-purple-900 text-lg">
-                          {testimonial.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {testimonial.subtitle}
-                        </p>
-                      </div>
-                    </div>
                     
-                    <p className="text-gray-700 mb-6 italic flex-grow text-sm leading-relaxed">
-                      "{testimonial.text}"
-                    </p>
                     
                     <div className="flex gap-4 mt-auto">
                       <div className="flex-1 relative">

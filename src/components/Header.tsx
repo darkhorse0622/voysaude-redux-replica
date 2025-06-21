@@ -44,9 +44,9 @@ const Header = () => {
 
           {/* Desktop Login Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" className="text-white border-white hover:bg-white hover:text-purple-900">
+            <a className="cursor-pointer text-white hover:text-orange-300">
               Entrar
-            </Button>
+            </a>
           </div>
 
           {/* Mobile menu button */}
