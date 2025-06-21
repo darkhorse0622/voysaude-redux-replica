@@ -1,10 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Menu, X } from 'lucide-react';
+import { ArrowRight, Check, CircleCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { RootState } from '@/store/store';
-import { toggleMobileMenu, closeMobileMenu } from '@/store/slices/navigationSlice';
+
 import {
   Accordion,
   AccordionContent,
@@ -19,39 +17,69 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from '@/components/ui/carousel';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const Dashboard = () => {
-  const dispatch = useDispatch();
-  const { isMobileMenuOpen } = useSelector((state: RootState) => state.navigation);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
 
-  const navigationItems = [
-    { name: 'Como funciona', href: '#como-funciona' },
-    { name: 'Tratamentos', href: '#tratamentos' },
-    { name: 'Especialistas', href: '#especialistas' },
-    { name: 'Resultados', href: '#resultados' },
-    { name: 'Recursos', href: '#recursos' },
-  ];
-
-  const accordionItems = [
+  const exceptItems = [
     {
-      id: 'inicio-tratamento',
-      title: 'Início do tratamento',
-      content: 'Avaliação inicial completa e início do seu plano personalizado de tratamento.',
+      title: "Primeiros sinais",
+      description: "1° a 3° mês (varia entre cada pessoa)",
+      items: [
+        {
+          title: 'Início do tratamento',
+          content: 'Se houver prescrição de medicamentos, os resultados devem surgir à medida que seu corpo se ajusta, podendo levar de 8 a 9 semanas para começarem os efeitos.',
+        },
+        {
+          title: 'Consulta nutricional',
+          content: 'Você faz uma consulta online com seu nutricionista e cria um plano personalizado. Depois, tem suporte online ilimitado pelo WhatsApp.',
+        },
+        {
+          title: 'Introduzindo novos hábitos',
+          content: 'Se estiver tomando medicação, com a fome mais controlada, ao final do 3o mês, é possível que seu corpo esteja familiarizado com seus novos hábitos.',
+        }
+      ]
     },
     {
-      id: 'consulta-nutricional',
-      title: 'Consulta nutricional',
-      content: 'Você faz uma consulta online com seu nutricionista e cria um plano personalizado. Depois, tem suporte online ilimitado pelo WhatsApp.',
+      title: "Ajustes",
+      description: "3° a 6° mês (varia entre cada pessoa)",
+      items: [
+        {
+          title: 'Comece a ver resultados',
+          content: 'Você pode perder até 10% do seu peso corporal até o final do 6° mês seguindo acompanhamento nutricional e medicamentos, caso prescritos.'
+        },
+        {
+          title: 'Nova avaliação médica',
+          content: 'Avalie suas metas e resultados. Se estiver tomando medicação, o médico ira entender se é o momento de readequar a dosagem de acordo com sua evolução no tratamento.',
+        },
+        {
+          title: 'Consolide seus hábitos',
+          content: 'Com seu corpo mais adaptado, o nutricionista irá te ajudar a firmar ainda mais seus novos hábitos alimentares para que durem por muito mais tempo.',
+        }
+      ]
     },
     {
-      id: 'introduzindo-habitos',
-      title: 'Introduzindo novos hábitos',
-      content: 'Implementação gradual de novos hábitos alimentares e de estilo de vida sustentáveis.',
-    }
+      title: "Manutenção",
+      description: "Geralmente a partir do 6° mês",
+      items: [
+        {
+          title: 'Reavaliando o tratamento',
+          content: 'Você continua a perder peso, mas já deve estar comemorando as conquistas. Momento ideal para o médico reavaliar o medicamento, caso esteja tomando.',
+        },
+        {
+          title: 'Ajustes para o futuro',
+          content: 'Com os novos hábitos adquiridos é hora de criar estratégias junto ao time para evitar recaídas e manter seu peso e saúde de forma duradoura.',
+        },
+        {
+          title: 'Trabalhando a autonomia',
+          content: 'Nesta altura, você provavelmente terá conhecido bem suas maiores forças e fraquezas, e estará mais confiante e preparada para seguir uma vida feliz.',
+        }
+      ]
+    },
   ];
 
   const stats = [
@@ -75,51 +103,41 @@ const Dashboard = () => {
   const testimonials = [
     {
       id: 1,
-      name: 'Vera',
-      subtitle: '-19kg em 1 ano',
-      text: '"A gente quer emagrecer rápido, mas eu não adquiri o peso de um dia pro outro. Minha nutri Renata é maravilhosa e minha jornada foi cheia de descobertas. Quase desanimei por não ver resultados imediatos, e ela sugeriu que eu me medisse. Ao perceber a perda de centímetros, ganhei motivação! A mudança de hábitos é fundamental, me sinto mais ágil e feliz, até consegui cruzar as pernas! Sou muito grata à Voy pelo apoio."',
+      name: 'Nathalie',
+      subtitle: '- 8,5kg em 2 meses',
+      text: '“Conheci a Voy através de uma amiga que teve ótimos resultados. Foi a melhor decisão que tomei. Cheguei a pesar 92,3 kg, vivia cansada, sem vontade de fazer nada e com dores. Agora me sinto disposta, durmo melhor e meu humor melhorou. E minhas calças jeans voltaram a servir! Mudanças que vou levar a longo prazo porque foram personalizadas pra mim. Não só recomendaria a Voy, como já recomendei!”',
       beforeAfter: {
-        before: '/lovable-uploads/faa08332-2d93-4b5d-9343-74caeb683afd.png',
-        after: '/lovable-uploads/4fd69da2-cd9e-4b11-878b-5db2f798a04a.png',
+        before: '/img/3.jpg',
+        after: '/img/7.jpg',
         period: 'Dia 1',
         periodAfter: 'Mês 12'
       }
     },
     {
       id: 2,
-      name: 'Carlos',
-      subtitle: '8kg em 2 meses',
-      text: 'Profissionais muito qualificados e um atendimento humanizado. O acompanhamento foi fundamental para manter a motivação.',
+      name: 'Keila',
+      subtitle: '- 6,5kg em 1 mês',
+      text: '“Sempre quis ter hábitos saudáveis, mas com duas filhas era difícil encontrar uma dieta que encaixasse na rotina e que funcionasse também para elas, sem ser super restritiva. A nutricionista montou um cardápio super bacana e ilustrativo que facilitou muito! Hoje, lido melhor com a compulsão e me sinto disposta para me exercitar. Isso melhorou meu tempo em família, e minhas filhas estão felizes com as mudanças!”',
       beforeAfter: {
-        before: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop&crop=face',
-        after: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=400&fit=crop&crop=face',
-        period: 'Dia 1',
+        before: '/img/6.jpg',
+        after: '/img/2.jpg',
+        period: 'Dia 2',
         periodAfter: 'Mês 2'
       }
     },
     {
       id: 3,
-      name: 'Ana',
-      subtitle: '5kg em 3 semanas',
-      text: 'Resultado surpreendente! A equipe me ajudou a criar hábitos sustentáveis que se encaixaram perfeitamente na minha rotina.',
+      name: 'Nathalie',
+      subtitle: '- 8,5kg em 2 meses',
+      text: '“Conheci a Voy através de uma amiga que teve ótimos resultados. Foi a melhor decisão que tomei. Cheguei a pesar 92,3 kg, vivia cansada, sem vontade de fazer nada e com dores. Agora me sinto disposta, durmo melhor e meu humor melhorou. E minhas calças jeans voltaram a servir! Mudanças que vou levar a longo prazo porque foram personalizadas pra mim. Não só recomendaria a Voy, como já recomendei!”',
       beforeAfter: {
-        before: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=400&fit=crop&crop=face',
-        after: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop&crop=face',
+        before: '/img/4.jpg',
+        after: '/img/8.png',
         period: 'Dia 1',
         periodAfter: 'Semana 3'
       }
     }
   ];
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   useEffect(() => {
     if (!api) {
       return;
@@ -134,139 +152,34 @@ const Dashboard = () => {
   }, [api]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-primary mt-8">
+      <Header/>
       {/* Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white shadow-md' 
-          : 'bg-gradient-to-r from-primary to-purple-800 backdrop-blur-sm'
-      }`}>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center">
-              <div className="bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold text-xl px-4 py-2 rounded-lg">
-                voy
-              </div>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              {navigationItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className={`transition-colors duration-200 font-medium ${
-                    isScrolled 
-                      ? 'text-gray-900 hover:text-orange-500' 
-                      : 'text-white hover:text-orange-300'
-                  }`}
-                >
-                  {item.name}
-                </a>
-              ))}
-            </nav>
-
-            {/* Desktop Login Button */}
-            <div className="hidden md:flex items-center space-x-4">
-              <a className={`cursor-pointer transition-colors duration-200 ${
-                isScrolled 
-                  ? 'text-gray-900 hover:text-orange-500' 
-                  : 'text-white hover:text-orange-300'
-              }`}>
-                Entrar
-              </a>
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => dispatch(toggleMobileMenu())}
-                className={`p-2 transition-colors duration-200 ${
-                  isScrolled ? 'text-gray-900' : 'text-white'
-                }`}
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Navigation with Fader */}
-          {isMobileMenuOpen && (
-            <div className="fixed inset-0 top-16 z-40 md:hidden">
-              {/* Fader background */}
-              <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => dispatch(closeMobileMenu())} />
-              
-              {/* Menu content */}
-              <div className={`relative h-full ${
-                isScrolled 
-                  ? 'bg-white' 
-                  : 'bg-primary'
-              }`}>
-                <div className="px-2 pt-2 pb-3 space-y-1">
-                  <div className={`font-semibold text-lg mb-4 px-3 ${
-                    isScrolled ? 'text-gray-900' : 'text-white'
-                  }`}>Menu</div>
-                  {navigationItems.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className={`block px-3 py-2 font-medium transition-colors duration-200 ${
-                        isScrolled 
-                          ? 'text-gray-900 hover:text-orange-500' 
-                          : 'text-white hover:text-orange-300'
-                      }`}
-                      onClick={() => dispatch(closeMobileMenu())}
-                    >
-                      {item.name}
-                      <span className="float-right">›</span>
-                    </a>
-                  ))}
-                  <div className={`border-t mt-4 pt-4 ${
-                    isScrolled ? 'border-gray-200' : 'border-purple-700'
-                  }`}>
-                    <div className={`font-semibold text-lg mb-4 px-3 ${
-                      isScrolled ? 'text-gray-900' : 'text-white'
-                    }`}>Minha Conta</div>
-                    <a
-                      href="#entrar"
-                      className={`block px-3 py-2 font-medium transition-colors duration-200 ${
-                        isScrolled 
-                          ? 'text-gray-900 hover:text-orange-500' 
-                          : 'text-white hover:text-orange-300'
-                      }`}
-                      onClick={() => dispatch(closeMobileMenu())}
-                    >
-                      Entrar
-                      <span className="float-right">›</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-
       <main>
         {/* Hero Section */}
-        <section className="min-h-screen bg-gradient-to-br from-primary via-purple-800 to-purple-700 flex items-center pt-16">
+        <section className="min-h-screen bg-primary flex items-center pt-16">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="text-white space-y-6 animate-fade-in">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
                   Cuidamos de você e de todo resto
                 </h1>
-                <p className="text-lg md:text-xl opacity-90 max-w-md">
-                  Encontre os produtos de nutrição certos. 
-                  Receba consultas qualificadas.
-                  Receba tudo para a construção de novos hábitos.
-                </p>
-                <Button className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-3 text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-200">
-                  Comece sem compromisso
+                <ol className="pl-5 text-md md:text-lg opacity-90 max-w-md font-bold">
+                  <li className="mb-2 flex gap-4 items-center">
+                    <Check className='w-4'/><span>Renovação periódica da avaliação médica</span>
+                  </li>
+                  <li className="mb-2  flex gap-4 items-center">
+                    <Check className='w-4'/><span>Suporte diário de especialistas</span>
+                  </li>
+                  <li className="mb-2  flex gap-4 items-center">
+                    <Check className='w-4'/><span>Nutrição para a construção de novos hábitos</span>
+                  </li>
+                </ol>
+                <Button className="bg-orange-500 hover:bg-orange-400 text-primary px-16 py-6 text-md font-bold rounded-lg transform hover:scale-105 transition-all duration-200 max-md:w-full">
+                  Funciona para mim?
                 </Button>
               </div>
-              <div className="relative animate-fade-in">
+              <div className="animate-fade-in my-8">
                 <img src='/img/1.webp' alt="Hero Image" className="w-full h-auto rounded-lg shadow-lg" />
               </div>
             </div>
@@ -277,71 +190,75 @@ const Dashboard = () => {
         <section id="tratamentos" className="py-16 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <img src='/img/8.png' alt="Tratamentos" className="w-full h-auto rounded-lg shadow-lg animate-fade-in" />
+              <img src='/img/8.png' alt="Tratamentos" className="w-full max-lg:h-auto h-full rounded-lg shadow-lg animate-fade-in" />
               <div className="space-y-6">
-                <h2 className="text-3xl md:text-4xl font-bold text-primary">
+                <h2 className="text-3xl md:text-4xl font-bold text-primary leading-loose">
                   Tratamentos de acordo com as novas normas da ANVISA
                 </h2>
-                <div className="space-y-4 text-gray-600">
+                <div className="space-y-4 text-primary0">
                   <div className="flex items-start space-x-3">
-                    <img src='https://cdn.joinvoy.com/shared/icons/checkmark_circle.svg'/>
+                    <CircleCheck/>
                     <p>Consultas médicas com especialistas em nutrição</p>
                   </div>
                   <div className="flex items-start space-x-3">
-                    <img src='https://cdn.joinvoy.com/shared/icons/checkmark_circle.svg'/>
+                    <CircleCheck/>
                     <p>Medicamentos e suplementos de alta qualidade certificados</p>
                   </div>
                   <div className="flex items-start space-x-3">
-                    <img src='https://cdn.joinvoy.com/shared/icons/checkmark_circle.svg'/>
+                    <CircleCheck/>
                     <p>Acompanhamento contínuo do seu progresso</p>
                   </div>
                 </div>
+                <p className='text-sm'>¹Os tratamentos são realizados apenas quando há prescrição médica, e são adquiridos em farmácias parceiras com retenção da receita.</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Expectation Section */}
-        <section id="resultados" className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
-                  Primeiros sinais
-                </h2>
-                <p className="text-gray-600 text-lg">
-                  1º a 3º mês (varia entre cada pessoa)
-                </p>
+        <section id="resultados" className="py-16">
+          <div className="container px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12">
+              O que esperar
+            </h2>
+            {exceptItems.map((item, index) => (
+              <div key={index} className="mb-12 grid grid-cols-2 md:grid-cols-1 lg:grid-cols-3  gap-4 bg-gray-100 rounded-lg p-8">
+                <div className='col-span-1'>
+                  <h3 className="text-3xl md:text-4xl font-bold text-primary mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="mb-4">{ item.description }</p>
+                </div>
+                <div className='col-span-1 lg:col-span-2 border-t-2 border-primary'>
+                  <Accordion type="single" collapsible>
+                    {item.items.map((subItem, subIndex) => (
+                      <AccordionItem key={subIndex} value={`item-${index}-${subIndex}`}>
+                        <AccordionTrigger className="py-4 text-left text-primary font-medium hover:no-underline">
+                          <p className='gap-2 flex text-sm font-bold'><span><ArrowRight/></span>{subItem.title}</p>
+                        </AccordionTrigger>
+                        <AccordionContent className="pb-4">
+                          {subItem.content}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
               </div>
-              
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <Accordion type="single" collapsible defaultValue="consulta-nutricional">
-                  {accordionItems.map((item) => (
-                    <AccordionItem key={item.id} value={item.id} className="border-b border-gray-200 last:border-b-0">
-                      <AccordionTrigger className="px-6 py-4 text-left hover:bg-gray-50 text-primary font-medium">
-                        {item.title}
-                      </AccordionTrigger>
-                      <AccordionContent className="px-6 pb-4 text-gray-600">
-                        {item.content}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
         {/* Stats Section */}
-        <section className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12 text-center">
+        <section className="py-8 bg-gray-100">
+          <div className="container px-4 sm:px-6 lg:px-8">
+            <span className='text-primary text-xs font-bold'>IMPACTO</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12">
               Os resultados falam por eles mesmos
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {stats.map((stat, index) => (
-                <div key={index} className="bg-white rounded-2xl p-8 text-center shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <div key={index} className="bg-gray-200 rounded-2xl p-8 duration-300 shadow-lg">
                   <div className="text-4xl md:text-5xl font-bold text-primary mb-4">
                     {stat.percentage}
                   </div>
@@ -354,30 +271,33 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
+            <p className='mt-8  text-xs'>
+              ¹ Fonte: NEJM ² Baseado em uma pesquisa com 215 pacientes ativos, fevereiro de 2023
+            </p>
           </div>
         </section>
 
         {/* Testimonial Section */}
-        <section className="py-16 bg-white">
+        <section className="py-8 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4 text-center">
+          <span className='text-primary text-xs font-bold'>IMPACTO</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
               A gente não vê a hora do seu antes e depois
             </h2>
-            <p className="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
-              Veja os depoimentos de quem já transformou a vida com nosso acompanhamento personalizado.
-            </p>
             
-            <div className="max-w-4xl mx-auto">
-              <Carousel setApi={setApi} className="relative">
-                <CarouselContent>
+            <div className="mx-auto pt-4">
+              <Carousel setApi={ setApi }>
+                <CarouselPrevious className="top-0 left-auto text-lg right-16 max-md:hidden" />
+                <CarouselNext className="top-0 right-4  max-md:hidden"/>
+                <CarouselContent className='mt-8'>
                   {testimonials.map((testimonial) => (
                     <CarouselItem key={testimonial.id}>
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                        <div className="bg-gray-50 rounded-2xl p-8">
-                          <h3 className="text-xl font-bold text-primary mb-2">
+                        <div className="bg-gray-50 rounded-2xl p-8 order-2">
+                          <h3 className="text-xl text-primary mb-8">
                             {testimonial.name}, {testimonial.subtitle}
                           </h3>
-                          <p className="text-gray-600 leading-relaxed">
+                          <p className="text-primary leading-relaxed">
                             {testimonial.text}
                           </p>
                         </div>
@@ -389,7 +309,7 @@ const Dashboard = () => {
                               alt={`${testimonial.name} antes`}
                               className="w-full h-80 object-cover rounded-lg"
                             />
-                            <div className="absolute bottom-3 left-3 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            <div className="absolute bottom-3 left-3 bg-green-300 text-primary px-3 py-1 rounded-sm text-sm font-medium">
                               {testimonial.beforeAfter.period}
                             </div>
                           </div>
@@ -399,7 +319,7 @@ const Dashboard = () => {
                               alt={`${testimonial.name} depois`}
                               className="w-full h-80 object-cover rounded-lg"
                             />
-                            <div className="absolute bottom-3 left-3 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            <div className="absolute bottom-3 left-3 bg-green-300 text-primary px-3 py-1 rounded-sm text-sm font-medium">
                               {testimonial.beforeAfter.periodAfter}
                             </div>
                           </div>
@@ -408,107 +328,46 @@ const Dashboard = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-4" />
-                <CarouselNext className="right-4" />
               </Carousel>
               
-              <div className="flex justify-center mt-8 space-x-2">
+              <div className="flex justify-center mt-8 space-x-2  max-md:hidden">
                 {Array.from({ length: count }).map((_, index) => (
                   <button
                     key={index}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      index + 1 === current ? 'bg-primary' : 'bg-gray-300'
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      index + 1 === current ? 'bg-primary' : 'bg-white border border-primary'
                     }`}
                     onClick={() => api?.scrollTo(index)}
                   />
                 ))}
               </div>
             </div>
+            <p className='mt-8 mb-16 text-xs'>
+              ¹ Fonte: NEJM ² Baseado em uma pesquisa com 215 pacientes ativos, fevereiro de 2023
+            </p>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-r from-primary via-purple-800 to-orange-500">
+        <section className="py-16 md:py-28 rounded-t-3xl bg-gradient-to-b from-primary #a44730 to-orange-500">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="max-w-3xl mx-auto text-white space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold">
+            <div className="max-w-2xl mx-auto text-white space-y-6">
+              <h2 className="text-2xl md:text-3xl font-bold">
                 Prora para sem burocracia
               </h2>
               <p className="text-lg opacity-90">
-                Comece seu tratamento personalizado hoje mesmo. 
-                Nossa equipe está pronta para cuidar de você.
+              Alcance seu peso ideal com planos seguros, 100% online, e com acompanhamento profissional em todas as etapas.
               </p>
-              <Button className="bg-white text-primary hover:bg-gray-100 px-8 py-3 text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-200">
-                Comece sem compromisso
-              </Button>
+              <div className='mx-auto max-w-xs'>
+                <Button variant='outline' className="w-full border-2 bg-transparent hover:bg-orange-100/25 hover:text-white text-white px-8 py-8 text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-200">
+                  Começar avaliação
+                </Button>
+              </div>
             </div>
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-primary text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <h3 className="text-xl font-semibold">Ficou com alguma dúvida?</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <span>📞</span>
-                  <span>11 99186 6413</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span>✉️</span>
-                  <span>ajuda@voysaude.com.br</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <span>❓</span>
-                  <div>
-                    <p className="font-medium">Visite nossa central de ajuda</p>
-                    <p className="text-sm opacity-75">Encontre respostas para suas perguntas</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <h3 className="text-xl font-semibold">LEGAL</h3>
-              <div className="space-y-2">
-                <a href="#" className="block hover:text-orange-300 transition-colors duration-200">
-                  Política de privacidade
-                </a>
-                <a href="#" className="block hover:text-orange-300 transition-colors duration-200">
-                  Termos e condições
-                </a>
-                <a href="#" className="block hover:text-orange-300 transition-colors duration-200">
-                  Seja um afiliado Voy
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-purple-700 mt-12 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-              <div className="flex items-center space-x-4">
-                <div className="bg-gradient-to-r from-orange-400 to-orange-500 text-white font-bold text-xl px-4 py-2 rounded-lg">
-                  voy
-                </div>
-              </div>
-              <div className="text-sm opacity-75 text-center md:text-right">
-                <p>A Voy não é uma farmácia. Todos produtos adquiridos são</p>
-                <p>manipulados pelas farmácias credenciadas de acordo com as normas da Anvisa.</p>
-                <p className="mt-2">Copyright 2025 Voy™. Todos os direitos reservados.</p>
-              </div>
-            </div>
-            
-            <div className="flex justify-center space-x-4 mt-6">
-              <div className="w-8 h-8 bg-blue-600 rounded"></div>
-              <div className="w-8 h-8 bg-blue-400 rounded"></div>
-              <div className="w-8 h-8 bg-blue-800 rounded"></div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 };
