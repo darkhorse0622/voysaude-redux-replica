@@ -1,6 +1,3 @@
-
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Check, CircleCheck, ChevronDown, Users, Clock, Shield, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,
@@ -12,78 +9,77 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const Treatment = () => {
-  const treatmentOptions = [
+  const cardApproach = [
     {
-      title: "Investigação",
-      description: "Analisamos seu histórico médico completo",
-      icon: "🔍",
-      items: [
-        "Análise de exames laboratoriais",
-        "Histórico médico detalhado",
-        "Avaliação de medicamentos atuais"
-      ]
+      image: <img src='/img/Card_Tirzepatida.webp' alt='Tirzepatida'/>,
+      title: "Semaglutida",
+      description: "Princípio ativo encontrado em tratamentos como"
     },
     {
-      title: "Prescrição",
-      description: "Medicamentos personalizados para seu caso",
-      icon: "💊",
-      items: [
-        "Medicamentos certificados pela ANVISA",
-        "Dosagem personalizada",
-        "Acompanhamento médico contínuo"
-      ]
+      image: <img src='/img/Card_Semaglutida.webp' alt='Semaglutida'/>,
+      title: "Tirzepatida",
+      description: "Princípio ativo encontrado em tratamentos como"
     },
     {
-      title: "Entregamos & acompanhamos",
-      description: "Suporte completo durante todo o tratamento",
-      icon: "🚛",
-      items: [
-        "Entrega rápida em casa",
-        "Acompanhamento semanal",
-        "Ajustes quando necessário"
-      ]
+      image: <img src='/img/Card_Bupropiona.webp' alt='Bupropiona'/>,
+      title: "Naltrexona + Bupropiona",
+      description: "Princípio ativo encontrado em tratamentos como"
     }
   ];
 
-  const medicalApproach = [
+  const medican = [
     {
-      icon: <Users className="w-8 h-8" />,
-      title: "Médicos",
-      description: "Equipe especializada em emagrecimento e saúde metabólica com anos de experiência."
+      image:<img src='/img/Genetics.svg' className='w-20' alt='Genetics'/>,
+      title: "Genética",
+      description: "Os genes definem seu apetite, metabolismo e até desejos alimentares. Nesses casos, o médico pode prescrever medicamentos para que você consiga perder peso e mudar hábitos."
     },
     {
-      icon: <Clock className="w-8 h-8" />,
-      title: "Consultoria",
-      description: "Acompanhamento contínuo durante todo o processo de tratamento."
+      image:<img src='/img/Reduce-hunger.svg' className='w-20' alt='hunger'/>,
+      title: "Metabolismo",
+      description: "Uma taxa metabólica mais lenta queima menos calorias e, frequentemente, leva a desejos alimentares. Com isso, mesmo com muita força de vontade, fica difícil driblar a genética."
     },
     {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Segurança",
-      description: "Todos os medicamentos são certificados e seguem as normas da ANVISA."
+      image:<img src='/img/Diarrhoea.svg' className='w-20' alt='Diarrhoea'/>,
+      title: "Hormônios",
+      description: "O estrogênio regula o armazenamento de gordura e a testosterona afeta a taxa metabólica. O médico é capaz de identificar desequilíbrios em ambos, para prescrever o tratamento adequado."
     },
     {
-      icon: <Heart className="w-8 h-8" />,
-      title: "Suporte não-clínico",
-      description: "Apoio emocional e nutricional para garantir o sucesso do tratamento."
+      image:<img src='/img/man.svg' className='w-20' alt='man'/>,
+      title: "Fatores psicológicos",
+      description: "O estresse aumenta os níveis de cortisol, elevando o apetite e a fome emocional. Se prescrita, a medicação controla esses efeitos, enquanto você cria novos hábitos saudáveis e prazerosos com seu nutri."
     }
   ];
-
   const scienceStats = [
     {
-      percentage: "97%",
-      title: "Dos pacientes perdem peso",
-      description: "Com acompanhamento médico adequado"
+      image:<img src='/img/Reduce-hunger.svg' className='w-40' alt='hunger'/>,
+      title: "Sua fome sob controle",
+      description: "Retardam o ritmo com que o estômago se esvazia de alimentos, promovendo uma sensação prolongada de saciedade."
     },
     {
-      percentage: "15kg",
-      title: "Perda média de peso",
-      description: "Nos primeiros 6 meses de tratamento"
+      image:<img src='/img/Curb-cravings.svg' className='w-40' alt='cravings'/>,
+      title: "Desejos na medida certa",
+      description: "Atuam no cérebro, diminuindo a vontade de consumir alimentos não saudáveis, e de comer em excesso."
     },
     {
-      percentage: "92%",
-      title: "Satisfação dos pacientes",
-      description: "Avaliam positivamente o tratamento"
+      image:<img src='/img/Weight+plateau.svg' className='w-40' alt='plateau'/>,
+      title: "Novo equilíbrio ",
+      description: "Com a diminuição dos desejos e ajuda de especialistas, fica mais fácil educar sua mente para novos hábitos saudáveis."
     }
+  ];
+
+  const GlpItems = [
+    {
+      question: "Como funcionam? ",
+      answer: "GLP-1 e GIP são medicações usadas no tratamento da obesidade e controle metabólico, sob prescrição médica. O GLP-1 imita um hormônio que regula o apetite e aumenta a saciedade. O GIP auxilia no controle da glicose e no metabolismo de gorduras."
+    },
+    {
+      question: "Para quem são indicados?",
+      answer: "Apenas o médico endocrinologista pode definir quem precisa do tratamento, por isso, a avaliação médica é tão importante."
+    },
+    {
+      question: "Quais são esses tratamentos?",
+      answer: "Existem vários tratamentos que atuam na diminuição da saciedade, como "
+    },
   ];
 
   const faqItems = [
@@ -126,237 +122,241 @@ const Treatment = () => {
       <Header/>
       
       {/* Hero Section */}
-      <section className="min-h-screen bg-primary flex items-center pt-16">
+      <section className="min-h-screen bg-orange-100 flex items-center pt-32 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="text-white space-y-6 animate-fade-in">
+            <div className="text-primary space-y-6 animate-fade-in">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
                 Com a receita, o seu tratamento chega até você
               </h1>
-              <p className="text-lg md:text-xl opacity-90 max-w-lg">
-                Medicamentos certificados, entrega rápida e acompanhamento médico especializado.
-              </p>
+              <div className="text-lg md:text-xl max-w-lg">
+                <ol className="pl-5 text-md md:text-lg max-w-md font-bold">
+                  <li className="mb-2 flex gap-4 items-center">
+                    <img src='/img/usp_experts_colour.svg' alt=''/><span>Medicamentos sob prescrição médica</span>
+                  </li>
+                  <li className="mb-2  flex gap-4 items-center">
+                    <img src='/img/usp_quality_colour.svg' alt=''/><span>Seguindo novas normas da ANVISA</span>
+                  </li>
+                  <li className="mb-2  flex gap-4 items-center">
+                    <img src='/img/usp_delivery_circle_colour.svg' alt=''/><span>Entrega mensal gratuita</span>
+                  </li>
+                </ol>
+              </div>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button className="bg-orange-500 hover:bg-orange-400 text-primary px-8 py-6 text-lg font-bold rounded-lg">
-                  Começar tratamento
-                </Button>
-                <Button variant="outline" className="bg-transparent hover:bg-white/10 border-2 border-white text-white px-8 py-6 text-lg">
-                  Saiba mais
+                <Button className="bg-orange-500 hover:bg-orange-400 text-primary px-16 py-6 text-md font-bold rounded-lg transform hover:scale-105 transition-all duration-200 max-md:w-full">
+                Fazer avaliação médica
                 </Button>
               </div>
+              <p className='text-sm pt-4 max-md:border-t-2 max-md:border-t-gray-200 md:pt-16'>
+                Toda prescrição e acompanhamento médico é feita por especialistas credenciados, cabendo à Voy a gestão do tratamento.
+              </p>
             </div>
             <div className="animate-fade-in">
-              <img src='/img/1.webp' alt="Tratamento" className="w-full h-auto rounded-lg shadow-lg" />
+              <img src='/img/medicationS01_heroComposition_v02.webp' alt="Tratamento" className="w-full h-auto rounded-lg shadow-lg" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Treatment Process Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Tratamentos seguros
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Seguimos rigorosamente as normas da ANVISA para garantir sua segurança
-            </p>
+      {/* Treatment Process Section */ }
+      <div className='container lg:max-w-6xl  xl:max-w-7xl'>
+        <section className="py-16 mx-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden mx-auto bg-gray-100 gap-6 rounded-3xl">
+            <img src='/img/medicationS02_image.png' className='h-full object-cover max-md:order-1'/>
+            <div className="flex flex-col  justify-center item my-8 mx-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-primary mb-4">
+                Tratamentos seguros
+              </h2>
+              <p className="text-lg">
+                Te ajudamos a encontrar o melhor tratamento, com médicos especializados
+                em emagrecimento que acompanham <strong>todo seu processo. Além disso, todos medicamentos
+                prescritos são adquiridos em farmácias parceiras de confiança com retenção de receita,
+                seguindo as novas normas da ANVISA.</strong>
+              </p>
+            </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {treatmentOptions.map((option, index) => (
-              <div key={index} className="bg-gray-50 rounded-2xl p-8 text-center">
-                <div className="text-4xl mb-4">{option.icon}</div>
-                <h3 className="text-xl font-bold text-primary mb-3">{option.title}</h3>
-                <p className="text-gray-600 mb-6">{option.description}</p>
-                <ul className="space-y-2">
-                  {option.items.map((item, itemIndex) => (
-                    <li key={itemIndex} className="flex items-center text-sm">
-                      <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* GLP-1 Information Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-primary">
+        {/* GLP-1 Information Section */}
+        <section className="md:py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden mx-auto gap-6 rounded-3xl">
+            <div className="space-y-6 py-6 md:px-6">
+              <h2 className="text-3xl md:text-4xl md:pt-24 font-bold text-primary">
                 O que são os tratamentos com GLP-1?
               </h2>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                Os medicamentos GLP-1 são uma classe de medicamentos que imitam um hormônio natural do corpo. Eles ajudam a regular o açúcar no sangue e promovem a sensação de saciedade.
+              <p className="text-lg leading-relaxed">
+              Tratamentos com GLP-1 e GIP são medicamentos usados no tratamento da obesidade para a perda de peso e controle metabólico. Somente sob prescrição médica.
               </p>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <CircleCheck className="text-green-500 mt-1" />
-                  <p>Aprovados pela ANVISA para tratamento de diabetes e obesidade</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <CircleCheck className="text-green-500 mt-1" />
-                  <p>Reduzem significativamente o apetite e a fome</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <CircleCheck className="text-green-500 mt-1" />
-                  <p>Melhoram o controle glicêmico e a sensibilidade à insulina</p>
-                </div>
+              <div className="space-y-4 pb-12">
+                {GlpItems.map((item, index) => (
+                  <Accordion key={index} type="single" collapsible className="border-b border-gray-200">
+                    <AccordionItem value={`item-${index}`}>
+                      <AccordionTrigger className="py-4 text-left font-bold text-lg hover:no-underline">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="pb-4">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>   
+                  </Accordion>
+                ))}
               </div>
             </div>
-            <div className="bg-orange-100 rounded-2xl p-8">
-              <img src='/img/8.png' alt="Medicamento GLP-1" className="w-full h-auto rounded-lg" />
-            </div>
+            <img src='/img/medicationS03_image_v02.png' alt="Medicamento GLP-1" className="h-full object-cover rounded-none" />
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Medical Approach Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Faça uma avaliação médica e tenha o diagnóstico certo
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Nossa equipe multidisciplinar garante o melhor cuidado para você
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {medicalApproach.map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-orange-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 text-primary">
-                  {item.icon}
-                </div>
-                <h3 className="text-lg font-bold text-primary mb-3">{item.title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Science Stats Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className='text-primary text-xs font-bold'>POR TRÁS DA CIÊNCIA</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Em quanto tempo o médico pode prescrever medicamentos
-            </h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {scienceStats.map((stat, index) => (
-              <div key={index} className="bg-white rounded-2xl p-8 text-center shadow-lg">
-                <div className="text-4xl md:text-5xl font-bold text-primary mb-4">
-                  {stat.percentage}
-                </div>
-                <h3 className="text-xl font-semibold text-primary mb-3">
-                  {stat.title}
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {stat.description}
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className='mt-8 text-xs text-center'>
-            ¹ Fonte: NEJM ² Baseado em uma pesquisa com 215 pacientes ativos, fevereiro de 2023
-          </p>
-        </div>
-      </section>
-
-      {/* Testimonial Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative">
-              <img
-                src="/img/3.jpg"
-                alt="Paciente satisfeita"
-                className="w-full h-96 object-cover rounded-lg"
-              />
-              <div className="absolute bottom-4 left-4 bg-white rounded-lg p-4 shadow-lg">
-                <p className="font-bold text-primary">Maria Silva</p>
-                <p className="text-sm text-gray-600">Perdeu 12kg em 4 meses</p>
-              </div>
-            </div>
-            <div className="space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold text-primary">
-                As respostas para todas as suas perguntas
+        {/* Card Approach Section */}
+        <section className="py-16 bg-white">
+          <div className="mx-auto px-4">
+            <div className="mb-8">
+              <span className='text-primary text-xs font-bold'>TRATAMENTOS</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-primary mt-2 mb-4">
+                Faça uma avaliação médica e tenha o diagnóstico certo
               </h2>
-              <p className="text-lg text-gray-700 leading-relaxed italic">
-                "O tratamento mudou minha vida. Não apenas perdi peso, mas ganhei confiança e melhorei minha saúde geral. A equipe médica me acompanhou em cada passo do processo."
+              <p className="text-lg">
+                Existem vários tratamentos seguros e registrados na ANVISA que funcionam como inibidores de apetite, cada um com um princípio ativo. É essencial que o médico entenda sua necessidade antes de qualquer prescrição.
               </p>
-              <div className="flex items-center space-x-4">
-                <div className="flex space-x-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400 text-xl">⭐</span>
-                  ))}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {cardApproach.map((item, index) => (
+                <div key={index}>
+                  <div className="bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4 text-primary">
+                    {item.image}
+                  </div>
+                  <h3 className="text-xl font-bold text-primary mb-3">{item.title}</h3>
+                  <p className="text-sm leading-relaxed">{item.description}</p>
                 </div>
-                <span className="text-gray-600">5.0 de 5 estrelas</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Science Stats Section */}
+        <section className="md:py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <span className='text-primary text-xs font-bold'>POR TRÁS DA CIÊNCIA</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-primary mt-2 mb-4">
+                Em quanto tempo o médico pode prescrever medicamentos
+              </h2>
+              <p>
+                Alguns fatores biológicos podem dificultar a perda de peso. Nesses casos, o médico pode identificar a necessidade de medicamentos para impulsionar o tratamento.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-8">
+              {medican.map((stat, index) => (
+                <div key={index} className="bg-gray-50 rounded-2xl p-8 shadow-lg">
+                  {stat.image}
+                  <h3 className="text-lg font-bold text-primary my-3">
+                    {stat.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed">
+                    {stat.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Por trás da ciência Section */}
+        <section className="py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-16">
+              <span className='text-primary text-xs font-bold'>POR TRÁS DA CIÊNCIA</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-primary mt-2 mb-4">
+                Por trás da ciência
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {scienceStats.map((stat, index) => (
+                <div key={index} className="rounded-2xl p-8">
+                  {stat.image}
+                  <h3 className="text-lg font-bold text-primary my-3">
+                    {stat.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed">
+                    {stat.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonial Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row gap-24 items-center">
+              <img
+                src="/img/Image.webp"
+                alt="Paciente satisfeita"
+                className="h-full object-cover rounded-lg"
+              />
+              <div className="space-y-6">
+                <p className="text-3xl text-gray-700 leading-relaxed">
+                  “Na Voy conseguimos oferecer um cuidado mais eficiente porque eliminamos burocracia. Isso faz toda a diferença na jornada dos pacientes.”
+                </p>
+                <div>
+                  <p className='font-bold text-xs'>Renata Araujo, PhD</p>
+                  <p className="text-gray-600">Nutricionista Líder, CRN3-41698</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* FAQ Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Perguntas frequentes
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Tire todas suas dúvidas sobre nossos tratamentos
-            </p>
+        {/* FAQ Section */}
+        <section className="md:py-16">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-8">
+              <h2 className="text-xs">
+               FAQ
+              </h2>
+              <p className="text-3xl md:text-4xl font-bold text-primary mt-2 mb-4">
+                As respostas para todas as suas perguntas
+              </p>
+            </div>
+            
+            <div className="w-full">
+              <Accordion type="single" collapsible>
+                {faqItems.map((item, index) => (
+                  <AccordionItem key={index} value={`item-${index}`}>
+                    <AccordionTrigger className="py-6 text-sm md:text-xl text-primary font-bold hover:no-underline">
+                      {item.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-6">
+                      {item.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           </div>
-          
-          <div className="max-w-3xl mx-auto">
-            <Accordion type="single" collapsible>
-              {faqItems.map((item, index) => (
-                <AccordionItem key={index} value={`item-${index}`}>
-                  <AccordionTrigger className="py-6 text-left text-primary font-medium hover:no-underline">
-                    {item.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-6 text-gray-700">
-                    {item.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </div>
-      </section>
-
+        </section>
+      </div>
       {/* CTA Section */}
       <section className="py-16 md:py-28 bg-gradient-to-b from-primary to-orange-500">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-2xl mx-auto text-white space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold">
-              É hoje o seu primeiro passo
+              A sua receita para perder peso
             </h2>
             <p className="text-lg opacity-90">
-              Comece sua jornada para uma vida mais saudável com acompanhamento médico especializado
+              Plano 100% online com prescrição médica e suporte de saúde
             </p>
             <div className='mx-auto max-w-xs'>
               <Button variant='outline' className="w-full border-2 bg-transparent hover:bg-orange-100/25 hover:text-white text-white px-8 py-8 text-lg font-semibold rounded-lg transform hover:scale-105 transition-all duration-200">
-                Iniciar tratamento
+                Quero uma avaliação
               </Button>
             </div>
           </div>
         </div>
       </section>
-
       <Footer/>
     </div>
   );

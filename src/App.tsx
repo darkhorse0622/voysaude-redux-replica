@@ -8,7 +8,6 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import Index from "./pages/Index";
 import Treatment from "./pages/Treatment";
-import TreatmentInfo from "./pages/TreatmentInfo";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,7 +22,6 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/treatments" element={<Treatment />} />
-            <Route path="/treatment-info" element={<TreatmentInfo />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
