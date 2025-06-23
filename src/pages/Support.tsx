@@ -2,8 +2,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import HeaderSurvey from '@/components/HeaderSurvey';
+import { ArrowRight } from 'lucide-react'
 
 const Support = () => {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const Support = () => {
                 <h2 className="text-lg font-semibold text-primary mb-4">
                   Ajuda com cadastro, planos e pedidos
                 </h2>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className="text-primary mb-6 leading-relaxed">
                   Receba ajuda do time de atendimento em questões sobre a recorrência do seu 
                   plano, cadastro, pedidos, status de entrega, pagamento, entre outros.
                 </p>
@@ -60,7 +60,7 @@ const Support = () => {
                     </div>
                     <span className="text-primary font-medium">WhatsApp</span>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400" />
+                  <ArrowRight className="w-5 h-5 text-primary/50" />
                 </button>
               </div>
             </div>

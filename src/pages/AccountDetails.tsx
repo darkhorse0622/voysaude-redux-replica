@@ -44,9 +44,9 @@ const AccountDetails = () => {
                 </div>
                 <div className="space-y-2">
                   <p className="text-gray-800 font-medium">Robert Arbuckle</p>
-                  <p className="text-gray-600">{user?.email || 'fastleopard9372@gmail.com'}</p>
+                  <p className="text-primary">{user?.email || 'fastleopard9372@gmail.com'}</p>
                 </div>
-                <button className="mt-4 text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center">
+                <button className="mt-4 text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center" onClick={()=>navigate('/personal-data')}>
                   Alterar
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
@@ -60,8 +60,8 @@ const AccountDetails = () => {
                   </div>
                   <h2 className="text-lg font-semibold text-primary">Endereço de entrega</h2>
                 </div>
-                <p className="text-gray-600 mb-4">Nenhum endereço de entrega cadastrado</p>
-                <button className="text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center">
+                <p className="text-primary mb-4">Nenhum endereço de entrega cadastrado</p>
+                <button className="text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center"  onClick={()=>navigate('/delivery-address')}>
                   Alterar
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
@@ -78,7 +78,7 @@ const AccountDetails = () => {
                   </div>
                   <span className="text-primary font-medium">Alterar senha</span>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <ArrowRight className="w-5 h-5 text-primary/50" />
               </button>
             </div>
           </div>

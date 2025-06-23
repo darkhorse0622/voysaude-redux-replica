@@ -60,7 +60,7 @@ const DeliveryAddress = () => {
             <div className="space-y-6">
               <div className="flex gap-3">
                 <div className="flex-1">
-                  <Label htmlFor="cep" className="text-sm font-medium text-gray-700 mb-2 block">
+                  <Label htmlFor="cep" className="text-sm font-medium text-primary mb-2 block">
                     CEP
                   </Label>
                   <Input
@@ -74,7 +74,7 @@ const DeliveryAddress = () => {
                 <div className="pt-7">
                   <Button
                     onClick={handleSearchCep}
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6"
+                    className="text-white px-6"
                   >
                     Procurar
                   </Button>
@@ -82,7 +82,7 @@ const DeliveryAddress = () => {
               </div>
 
               <div>
-                <Label htmlFor="address" className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label htmlFor="address" className="text-sm font-medium text-primary mb-2 block">
                   Endereço
                 </Label>
                 <Input
@@ -94,7 +94,7 @@ const DeliveryAddress = () => {
               </div>
 
               <div>
-                <Label htmlFor="number" className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label htmlFor="number" className="text-sm font-medium text-primary mb-2 block">
                   Número
                 </Label>
                 <Input
@@ -106,7 +106,7 @@ const DeliveryAddress = () => {
               </div>
 
               <div>
-                <Label htmlFor="complement" className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label htmlFor="complement" className="text-sm font-medium text-primary mb-2 block">
                   Complemento (opcional)
                 </Label>
                 <Input
@@ -119,7 +119,7 @@ const DeliveryAddress = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="neighborhood" className="text-sm font-medium text-gray-700 mb-2 block">
+                  <Label htmlFor="neighborhood" className="text-sm font-medium text-primary mb-2 block">
                     Acre
                   </Label>
                   <Input
@@ -130,7 +130,7 @@ const DeliveryAddress = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="city" className="text-sm font-medium text-gray-700 mb-2 block">
+                  <Label htmlFor="city" className="text-sm font-medium text-primary mb-2 block">
                     Cidade
                   </Label>
                   <Input
@@ -144,7 +144,7 @@ const DeliveryAddress = () => {
 
               <Button
                 onClick={handleSave}
-                className="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 py-6 text-lg font-medium"
+                className="w-full   text-white py-6 text-lg font-medium"
               >
                 Salvar endereço de entrega
               </Button>

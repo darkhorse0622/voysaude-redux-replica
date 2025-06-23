@@ -279,7 +279,7 @@ Ame a sua evolução”`,
                   <h3 className="text-xl font-semibold text-primary mb-3">
                     {stat.title}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-primary text-sm leading-relaxed">
                     {stat.description}
                   </p>
                 </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,6 +17,8 @@ const TypeformSurvey = () => {
   const [visitedFields, setVisitedFields] = useState([]);
   const [isComplete, setIsComplete] = useState(false);
   const [currentThankyouScreen, setCurrentThankyouScreen] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   // Load form data on component mount
   const form_id = import.meta.env.VITE_TYPE_FROM_FORM_ID;
@@ -38,6 +39,125 @@ const TypeformSurvey = () => {
           console.error(error);
       });
   }, []);
+  console.log("answer:",answers);
+  
+  // Function to format answers for backend submission
+  const formatAnswersForSubmission = () => {
+    const formattedAnswers = [];
+    
+    Object.entries(answers).forEach(([fieldRef, answer]) => {
+      const field = formData.fields.find(f => f.ref === fieldRef);
+      if (!field) return;
+
+      let formattedAnswer = {
+        field: {
+          id: field.id,
+          ref: fieldRef,
+          type: field.type
+        }
+      };
+
+      switch (field.type) {
+        case 'multiple_choice':
+          if (field.properties.allow_multiple_selection) {
+            // Multiple selection
+            formattedAnswer.choices = {
+              refs: answer || [],
+              labels: (answer || []).map(ref => {
+                const choice = field.properties.choices.find(c => c.ref === ref);
+                return choice ? choice.label : '';
+              })
+            };
+          } else {
+            // Single selection
+            const choice = field.properties.choices.find(c => c.ref === answer);
+            formattedAnswer.choice = {
+              ref: answer,
+              label: choice ? choice.label : ''
+            };
+          }
+          break;
+
+        case 'dropdown':
+          const dropdownChoice = field.properties.choices.find(c => c.ref === answer);
+          formattedAnswer.choice = {
+            ref: answer,
+            label: dropdownChoice ? dropdownChoice.label : ''
+          };
+          break;
+
+        case 'short_text':
+        case 'long_text':
+          formattedAnswer.text = answer;
+          break;
+
+        case 'number':
+          formattedAnswer.number = parseFloat(answer);
+          break;
+
+        case 'date':
+          formattedAnswer.date = answer;
+          break;
+
+        case 'email':
+          formattedAnswer.email = answer;
+          break;
+
+        case 'phone_number':
+          formattedAnswer.phone_number = answer;
+          break;
+
+        case 'inline_group':
+          formattedAnswer.text = JSON.stringify(answer);
+          break;
+
+        default:
+          formattedAnswer.text = answer;
+      }
+
+      formattedAnswers.push(formattedAnswer);
+    });
+
+    return {
+      form_id: form_id,
+      form_ref: formData.ref,
+      answers: formattedAnswers,
+      metadata: {
+        user_agent: navigator.userAgent,
+        referer: window.location.href,
+        submitted_at: new Date().toISOString()
+      }
+    };
+  };
+
+  // Function to submit answers to backend
+  const submitAnswersToBackend = async () => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const submissionData = formatAnswersForSubmission();
+      
+      console.log('Submitting answers:', submissionData);
+
+      // Submit to your backend endpoint
+      const response = await axios.post('/api/typeform/submissions', submissionData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${api_token}`
+        }
+      });
+
+      console.log('Submission successful:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Submission failed:', error);
+      setSubmitError('Failed to submit survey. Please try again.');
+      throw error;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (!formData) {
     return (
@@ -51,7 +171,8 @@ const TypeformSurvey = () => {
   }
 
   const currentField = formData.fields[currentFieldIndex];
-  console.log(currentField);
+  console.log('Current field:', currentField);
+  console.log('All answers collected:', answers);
   
   // Get the next field based on logic rules
   const getNextField = () => {
@@ -106,7 +227,7 @@ const TypeformSurvey = () => {
     };
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     // Save current field to visited
     if (currentField && !visitedFields.includes(currentFieldIndex)) {
       setVisitedFields([...visitedFields, currentFieldIndex]);
@@ -115,16 +236,30 @@ const TypeformSurvey = () => {
     const nextDestination = getNextField();
     
     if (!nextDestination) {
-      setIsComplete(true);
+      // Submit answers before completing
+      try {
+        await submitAnswersToBackend();
+        setIsComplete(true);
+      } catch (error) {
+        // Handle submission error - you might want to show a retry option
+        console.error('Failed to submit answers');
+      }
       return;
     }
 
     if (nextDestination.type === 'thankyou') {
-      const thankyouScreen = formData.thankyou_screens.find(
-        screen => screen.ref === nextDestination.value
-      );
-      setCurrentThankyouScreen(thankyouScreen);
-      setIsComplete(true);
+      // Submit answers before showing thank you screen
+      try {
+        await submitAnswersToBackend();
+        const thankyouScreen = formData.thankyou_screens.find(
+          screen => screen.ref === nextDestination.value
+        );
+        setCurrentThankyouScreen(thankyouScreen);
+        setIsComplete(true);
+      } catch (error) {
+        // Handle submission error
+        console.error('Failed to submit answers');
+      }
     } else if (nextDestination.type === 'field') {
       const nextFieldIndex = formData.fields.findIndex(
         field => field.ref === nextDestination.value
@@ -142,6 +277,7 @@ const TypeformSurvey = () => {
       setVisitedFields(visitedFields.slice(0, -1));
       setIsComplete(false);
       setCurrentThankyouScreen(null);
+      setSubmitError(null);
     }
   };
 
@@ -150,6 +286,16 @@ const TypeformSurvey = () => {
       ...answers,
       [currentField.ref]: value
     });
+  };
+
+  // Function to manually submit answers (optional - for testing)
+  const handleManualSubmit = async () => {
+    try {
+      await submitAnswersToBackend();
+      alert('Answers submitted successfully!');
+    } catch (error) {
+      alert('Failed to submit answers. Please try again.');
+    }
   };
 
   const renderField = () => {
@@ -460,6 +606,18 @@ const TypeformSurvey = () => {
             className="w-full max-w-md mx-auto rounded-lg shadow-lg"
           />
         )}
+        {submitError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            {submitError}
+            <Button 
+              onClick={handleManualSubmit}
+              className="mt-2 bg-red-500 hover:bg-red-600 text-white"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Submitting...' : 'Retry Submission'}
+            </Button>
+          </div>
+        )}
         {screen.properties.show_button && (
           <Button className="mt-8 h-14 px-8 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-lg transition-colors">
             {screen.properties.button_text}
@@ -510,6 +668,22 @@ const TypeformSurvey = () => {
 
       <div className="container mx-auto px-4 py-8 max-w-2xl mt-16">
         <div className="pt-4">
+          {/* Debug info - Remove in production */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-700">
+                <strong>Debug:</strong> {Object.keys(answers).length} answers collected
+              </p>
+              <Button 
+                onClick={handleManualSubmit}
+                className="mt-2 bg-blue-500 hover:bg-blue-600 text-white text-sm"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : 'Test Submit'}
+              </Button>
+            </div>
+          )}
+
           {/* Survey content */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
             {isComplete ? renderThankyouScreen() : renderField()}
@@ -522,6 +696,7 @@ const TypeformSurvey = () => {
                 onClick={handlePrevious}
                 variant="ghost"
                 className="flex items-center text-gray-600 hover:text-gray-800 h-12 px-4"
+                disabled={isSubmitting}
               >
                 <ChevronLeft className="w-5 h-5 mr-2" />
                 Anterior
@@ -531,14 +706,19 @@ const TypeformSurvey = () => {
             {!isComplete && (
               <Button
                 onClick={handleNext}
-                disabled={!isCurrentFieldValid()}
+                disabled={!isCurrentFieldValid() || isSubmitting}
                 className={`ml-auto h-14 px-8 rounded-lg text-lg font-semibold transition-colors ${
-                  isCurrentFieldValid()
+                  isCurrentFieldValid() && !isSubmitting
                     ? 'bg-orange-500 hover:bg-orange-600 text-white'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300'
                 }`}
               >
-                {currentField?.type === 'statement' ? (
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Enviando...
+                  </>
+                ) : currentField?.type === 'statement' ? (
                   <>
                     {currentField.properties.button_text || 'Continuar'}
                     <ChevronRight className="w-5 h-5 ml-2" />

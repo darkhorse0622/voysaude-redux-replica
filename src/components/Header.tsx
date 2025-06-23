@@ -85,7 +85,7 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4 pr-8">
             {user ? (
               <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 cursor-pointer hover:text-orange-500" onClick={()=>navigate('/user-dashboard')}>
                   <User size={20} className={isScrolled ? 'text-primary' : 'text-white'} />
                   <span className={isScrolled ? 'text-primary' : 'text-white'}>{user.email}</span>
                 </div>
@@ -160,7 +160,7 @@ const Header = () => {
                   </div>
                   {user ? (
                     <>
-                      <div className="border-b border-b-gray-200 block px-3 py-4 text-primary">
+                      <div className="border-b border-b-gray-200 block px-3 py-4 text-primary" onClick={()=>navigate('/user-dashboard')}>
                         {user.email}
                       </div>
                       <a

@@ -59,7 +59,7 @@ const Login = () => {
           <h2 className="mt-6 text-3xl font-extrabold text-primary">
             Faça login em sua conta
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-primary">
             Ou{' '}
             <Link
               to="/auth/register"

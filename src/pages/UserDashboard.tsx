@@ -42,7 +42,7 @@ const UserDashboard = () => {
           <div className="space-y-6">
             {/* PLANOS Section */}
             <div>
-              <h2 className="text-sm font-semibold text-gray-600 mb-4 tracking-wider">PLANOS</h2>
+              <h2 className="text-sm font-semibold text-primary mb-4 tracking-wider">PLANOS</h2>
               <button
                 onClick={() => navigate('/survey')}
                 className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
@@ -51,13 +51,13 @@ const UserDashboard = () => {
                   <Package className="w-5 h-5 text-primary" />
                   <span className="text-primary font-medium">Gerenciar Planos e Pedidos</span>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400" />
+                <ArrowRight className="w-5 h-5 text-primary/50" />
               </button>
             </div>
 
             {/* CONTA Section */}
             <div>
-              <h2 className="text-sm font-semibold text-gray-600 mb-4 tracking-wider">CONTA</h2>
+              <h2 className="text-sm font-semibold text-primary mb-4 tracking-wider">CONTA</h2>
               <div className="space-y-2">
                 <button
                   onClick={() => navigate('/support')}
@@ -67,7 +67,7 @@ const UserDashboard = () => {
                     <HelpCircle className="w-5 h-5 text-primary" />
                     <span className="text-primary font-medium">Suporte</span>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400" />
+                  <ArrowRight className="w-5 h-5 text-primary/50" />
                 </button>
                 
                 <button
@@ -78,7 +78,7 @@ const UserDashboard = () => {
                     <User className="w-5 h-5 text-primary" />
                     <span className="text-primary font-medium">Detalhes da conta</span>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400" />
+                  <ArrowRight className="w-5 h-5 text-primary/50" />
                 </button>
               </div>
             </div>

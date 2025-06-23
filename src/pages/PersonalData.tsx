@@ -55,7 +55,7 @@ const PersonalData = () => {
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName" className="text-sm font-medium text-gray-700 mb-2 block">
+                  <Label htmlFor="firstName" className="text-sm font-medium text-primary mb-2 block">
                     Nome
                   </Label>
                   <Input
@@ -66,7 +66,7 @@ const PersonalData = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="lastName" className="text-sm font-medium text-gray-700 mb-2 block">
+                  <Label htmlFor="lastName" className="text-sm font-medium text-primary mb-2 block">
                     Sobrenome
                   </Label>
                   <Input
@@ -79,7 +79,7 @@ const PersonalData = () => {
               </div>
 
               <div>
-                <Label htmlFor="phone" className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label htmlFor="phone" className="text-sm font-medium text-primary mb-2 block">
                   Celular com DDD
                 </Label>
                 <Input
@@ -91,7 +91,7 @@ const PersonalData = () => {
               </div>
 
               <div>
-                <Label htmlFor="cpf" className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label htmlFor="cpf" className="text-sm font-medium text-primary mb-2 block">
                   CPF
                 </Label>
                 <Input
@@ -103,7 +103,7 @@ const PersonalData = () => {
               </div>
 
               <div>
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label htmlFor="email" className="text-sm font-medium text-primary mb-2 block">
                   Email
                 </Label>
                 <Input
@@ -117,7 +117,7 @@ const PersonalData = () => {
 
               <Button
                 onClick={handleSave}
-                className="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 py-6 text-lg font-medium"
+                className="w-full text-white py-6 text-lg font-medium"
               >
                 Salvar Alterações
               </Button>

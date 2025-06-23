@@ -303,7 +303,7 @@ const Treatment = () => {
                 </p>
                 <div>
                   <p className='font-bold text-xs'>Renata Araujo, PhD</p>
-                  <p className="text-gray-600">Nutricionista Líder, CRN3-41698</p>
+                  <p className="text-primary">Nutricionista Líder, CRN3-41698</p>
                 </div>
               </div>
             </div>

@@ -53,7 +53,7 @@ const ForgotPassword = () => {
             <h2 className="mt-6 text-3xl font-extrabold text-primary">
               Email enviado!
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-primary">
               Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.
             </p>
           </div>
@@ -77,7 +77,7 @@ const ForgotPassword = () => {
           <h2 className="mt-6 text-3xl font-extrabold text-primary">
             Esqueceu sua senha?
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-primary">
             Digite seu email e enviaremos um link para redefinir sua senha.
           </p>
         </div>

@@ -66,7 +66,7 @@ const ChangePassword = () => {
             
             <div className="space-y-6">
               <div>
-                <Label htmlFor="newPassword" className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label htmlFor="newPassword" className="text-sm font-medium text-primary mb-2 block">
                   Nova senha
                 </Label>
                 <Input
@@ -79,7 +79,7 @@ const ChangePassword = () => {
               </div>
 
               <div>
-                <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 mb-2 block">
+                <Label htmlFor="confirmPassword" className="text-sm font-medium text-primary mb-2 block">
                   Confirmar nova senha
                 </Label>
                 <Input
@@ -93,7 +93,7 @@ const ChangePassword = () => {
 
               <Button
                 onClick={handleSave}
-                className="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 py-6 text-lg font-medium"
+                className="w-full  text-white py-6 text-lg font-medium"
               >
                 Salvar alterações
               </Button>
