@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import HeaderSurvey from '@/components/HeaderSurvey';
 import { ArrowRight } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext';
 
 const Support = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleWhatsAppClick = () => {
-    window.open('https://wa.me/5511964165666', '_blank');
+    window.open(`https://wa.me/${user?.phone}`, '_blank');
   };
 
   return (
