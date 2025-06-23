@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, AlertCircle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -7,10 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import axios from 'axios';
 import HeaderSurvey from '@/components/HeaderSurvey';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import type { SurveyResponse } from '@/types/survey';
 
 const TypeformSurvey = () => {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState(null);
   const [currentFieldIndex, setCurrentFieldIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -24,7 +31,15 @@ const TypeformSurvey = () => {
   const form_id = import.meta.env.VITE_TYPE_FROM_FORM_ID;
   const api_token = import.meta.env.VITE_TYPE_FORM_API_KEY;
 
+  // Redirect to login if not authenticated
   useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth/login', { state: { from: '/survey' } });
+    }
+  }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    if (user) {
       // Use the proxy endpoint instead of direct API call
       axios.get(`/api/typeform/forms/${form_id}`, {
           headers: {
@@ -38,118 +53,71 @@ const TypeformSurvey = () => {
       .catch(error => {
           console.error(error);
       });
-  }, []);
+    }
+  }, [user, form_id, api_token]);
   console.log("answer:",answers);
   
-  // Function to format answers for backend submission
-  const formatAnswersForSubmission = () => {
-    const formattedAnswers = [];
+  // Function to format answers for Supabase storage
+  const formatAnswersForSupabase = () => {
+    const formattedResponses = {};
     
     Object.entries(answers).forEach(([fieldRef, answer]) => {
       const field = formData.fields.find(f => f.ref === fieldRef);
       if (!field) return;
 
-      let formattedAnswer = {
-        field: {
-          id: field.id,
-          ref: fieldRef,
-          type: field.type
-        }
+      formattedResponses[fieldRef] = {
+        field_id: field.id,
+        field_type: field.type,
+        title: field.title,
+        answer: answer,
+        properties: field.properties || {}
       };
-
-      switch (field.type) {
-        case 'multiple_choice':
-          if (field.properties.allow_multiple_selection) {
-            // Multiple selection
-            formattedAnswer.choices = {
-              refs: answer || [],
-              labels: (answer || []).map(ref => {
-                const choice = field.properties.choices.find(c => c.ref === ref);
-                return choice ? choice.label : '';
-              })
-            };
-          } else {
-            // Single selection
-            const choice = field.properties.choices.find(c => c.ref === answer);
-            formattedAnswer.choice = {
-              ref: answer,
-              label: choice ? choice.label : ''
-            };
-          }
-          break;
-
-        case 'dropdown':
-          const dropdownChoice = field.properties.choices.find(c => c.ref === answer);
-          formattedAnswer.choice = {
-            ref: answer,
-            label: dropdownChoice ? dropdownChoice.label : ''
-          };
-          break;
-
-        case 'short_text':
-        case 'long_text':
-          formattedAnswer.text = answer;
-          break;
-
-        case 'number':
-          formattedAnswer.number = parseFloat(answer);
-          break;
-
-        case 'date':
-          formattedAnswer.date = answer;
-          break;
-
-        case 'email':
-          formattedAnswer.email = answer;
-          break;
-
-        case 'phone_number':
-          formattedAnswer.phone_number = answer;
-          break;
-
-        case 'inline_group':
-          formattedAnswer.text = JSON.stringify(answer);
-          break;
-
-        default:
-          formattedAnswer.text = answer;
-      }
-
-      formattedAnswers.push(formattedAnswer);
     });
 
-    return {
-      form_id: form_id,
-      form_ref: formData.ref,
-      answers: formattedAnswers,
-      metadata: {
-        user_agent: navigator.userAgent,
-        referer: window.location.href,
-        submitted_at: new Date().toISOString()
-      }
-    };
+    return formattedResponses;
   };
 
-  // Function to submit answers to backend
-  const submitAnswersToBackend = async () => {
+  // Function to submit answers to Supabase
+  const submitAnswersToSupabase = async () => {
+    if (!user) {
+      setSubmitError('You must be logged in to submit the survey.');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError(null);
 
     try {
-      const submissionData = formatAnswersForSubmission();
-      
-      console.log('Submitting answers:', submissionData);
-
-      // Submit to your backend endpoint
-      const response = await axios.post('/api/typeform/submissions', submissionData, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${api_token}`
+      const surveyResponse: Omit<SurveyResponse, 'id' | 'created_at' | 'updated_at'> = {
+        user_id: user.id,
+        form_id: form_id,
+        form_title: formData.title || 'Untitled Survey',
+        submitted_at: new Date().toISOString(),
+        responses: formatAnswersForSupabase(),
+        metadata: {
+          user_agent: navigator.userAgent,
+          referer: window.location.href,
+          form_ref: formData.ref,
+          total_fields: formData.fields.length,
+          answered_fields: Object.keys(answers).length
         }
-      });
+      };
 
-      console.log('Submission successful:', response.data);
-      return response.data;
+      console.log('Submitting survey response to Supabase:', surveyResponse);
+
+      const { data, error } = await supabase
+        .from('survey_responses')
+        .insert([surveyResponse])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(error.message);
+      }
+
+      console.log('Survey submitted successfully:', data);
+      return data;
     } catch (error) {
       console.error('Submission failed:', error);
       setSubmitError('Failed to submit survey. Please try again.');
@@ -158,6 +126,19 @@ const TypeformSurvey = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-primary">
+            {authLoading ? 'Loading...' : 'Redirecting to login...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!formData) {
     return (
@@ -238,10 +219,10 @@ const TypeformSurvey = () => {
     if (!nextDestination) {
       // Submit answers before completing
       try {
-        await submitAnswersToBackend();
+        await submitAnswersToSupabase();
         setIsComplete(true);
       } catch (error) {
-        // Handle submission error - you might want to show a retry option
+        // Handle submission error
         console.error('Failed to submit answers');
       }
       return;
@@ -250,14 +231,15 @@ const TypeformSurvey = () => {
     if (nextDestination.type === 'thankyou') {
       // Submit answers before showing thank you screen
       try {
-        await submitAnswersToBackend();
+        await submitAnswersToSupabase();
+        // Find the thank you screen
         const thankyouScreen = formData.thankyou_screens.find(
           screen => screen.ref === nextDestination.value
-        );
+        ) || formData.thankyou_screens[0];
+        
         setCurrentThankyouScreen(thankyouScreen);
         setIsComplete(true);
       } catch (error) {
-        // Handle submission error
         console.error('Failed to submit answers');
       }
     } else if (nextDestination.type === 'field') {
@@ -291,7 +273,7 @@ const TypeformSurvey = () => {
   // Function to manually submit answers (optional - for testing)
   const handleManualSubmit = async () => {
     try {
-      await submitAnswersToBackend();
+      await submitAnswersToSupabase();
       alert('Answers submitted successfully!');
     } catch (error) {
       alert('Failed to submit answers. Please try again.');
@@ -607,16 +589,20 @@ const TypeformSurvey = () => {
           />
         )}
         {submitError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-            {submitError}
-            <Button 
-              onClick={handleManualSubmit}
-              className="mt-2 bg-red-500 hover:bg-red-600 text-white"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Submitting...' : 'Retry Submission'}
-            </Button>
-          </div>
+          <Alert variant="destructive" className="mt-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {submitError}
+              <Button 
+                onClick={handleManualSubmit}
+                className="mt-2 ml-4 bg-red-500 hover:bg-red-600 text-white"
+                size="sm"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : 'Retry Submission'}
+              </Button>
+            </AlertDescription>
+          </Alert>
         )}
         {screen.properties.show_button && (
           <Button className="mt-8 h-14 px-8 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-lg transition-colors">
