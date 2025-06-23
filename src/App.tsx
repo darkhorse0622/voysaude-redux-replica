@@ -9,7 +9,7 @@ import { store } from "./store/store";
 import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import Treatment from "./pages/Treatment";
-import TreatmentInfo from "./pages/TreatmentInfo";
+import Survey from "./pages/Survey";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -28,7 +28,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/treatments" element={<Treatment />} />
-              <Route path="/treatment-info" element={<TreatmentInfo />} />
+              <Route path="/survey" element={<Survey />} />
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/register" element={<Register />} />
               <Route path="/auth/forgot-password" element={<ForgotPassword />} />

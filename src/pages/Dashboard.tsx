@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Check, CircleCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createClient } from '@typeform/api-client'
 
 import {
   Accordion,
@@ -153,7 +154,8 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background text-primary mt-8">
-      <Header/>
+      <Header />
+      
       {/* Header */}
       <main>
         {/* Hero Section */}
