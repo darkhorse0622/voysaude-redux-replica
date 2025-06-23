@@ -31,10 +31,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Handle user creation on signup confirmation
+        if (event === 'SIGNED_UP' && session?.user) {
+          try {
+            // Create user profile in the database
+            const { error } = await supabase
+              .from('users')
+              .insert([
+                {
+                  id: session.user.id,
+                  email: session.user.email,
+                  first_name: session.user.user_metadata?.first_name || '',
+                  last_name: session.user.user_metadata?.last_name || '',
+                  role: 'REGISTERED',
+                  is_active: true,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                }
+              ]);
+
+            if (error) {
+              console.error('Error creating user profile:', error);
+            }
+          } catch (error) {
+            console.error('Failed to create user profile:', error);
+          }
+        }
+
+        // Update last login when user signs in
+        if (event === 'SIGNED_IN' && session?.user) {
+          try {
+            await supabase
+              .from('users')
+              .update({
+                last_login: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', session.user.id);
+          } catch (error) {
+            console.error('Failed to update last login:', error);
+          }
+        }
       }
     );
 
