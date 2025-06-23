@@ -22,6 +22,7 @@ const ProtectedRoute = ({
   useEffect(() => {
     const loadUserProfile = async () => {
       if (user) {
+        
         try {
           const profile = await UserService.getCurrentUserProfile();
           setUserProfile(profile);
@@ -36,7 +37,7 @@ const ProtectedRoute = ({
       loadUserProfile();
     }
   }, [user, authLoading]);
-
+  
   // Show loading state while checking authentication
   if (authLoading || profileLoading) {
     return (

@@ -28,7 +28,8 @@ const UserDashboard = () => {
       });
     }
   };
-
+  console.log("UserDashboard:", user);
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <HeaderSurvey />

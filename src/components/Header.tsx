@@ -89,15 +89,13 @@ const Header = () => {
                   <User size={20} className={isScrolled ? 'text-primary' : 'text-white'} />
                   <span className={isScrolled ? 'text-primary' : 'text-white'}>{user.email}</span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <a
                   onClick={handleSignOut}
-                  className={`${isScrolled ? 'text-primary hover:text-orange-500' : 'text-white hover:text-orange-300'}`}
+                  className={`flex items-center cursor-pointer ${isScrolled ? 'text-primary hover:text-orange-500' : 'text-white hover:text-orange-300'}`}
                 >
                   <LogOut size={16} className="mr-2" />
                   Sair
-                </Button>
+                </a>
               </div>
             ) : (
               <div className="flex items-center space-x-4">

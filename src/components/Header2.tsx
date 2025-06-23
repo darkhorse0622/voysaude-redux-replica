@@ -82,15 +82,13 @@ const Header = () => {
                   <User size={20} className="text-primary" />
                   <span className="text-primary hover:text-orange-500">{user.email}</span>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <a
                   onClick={handleSignOut}
-                  className="text-primary hover:text-orange-500"
+                  className="flex items-center cursor-pointer text-primary hover:text-orange-500"
                 >
                   <LogOut size={16} className="mr-2" />
                   Sair
-                </Button>
+                </a>
               </div>
             ) : (
               <div className="flex items-center space-x-4">
