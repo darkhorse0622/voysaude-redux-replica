@@ -1,3 +1,4 @@
+
 import { Button } from "./ui/button";
 const Footer = () => {
   return (
@@ -15,6 +16,10 @@ const Footer = () => {
               <button className="flex items-center space-x-3">
                 <span><img src="/img/Phone.svg"/></span>
                 <span className="font-medium">(11) 96416-5666</span>
+              </button>
+              <button className="flex items-center space-x-3">
+                <span><img src="/img/Phone.svg"/></span>
+                <span className="font-medium">(11) 3093-3222</span>
               </button>
               <button className="flex items-center space-x-3">
                 <span><img src="/img/Support.svg"/></span>
@@ -65,7 +70,8 @@ const Footer = () => {
               <div className="text-sm pt-6 font-normal">
                 <p>A Voy não é uma farmácia. Todos produtos adquiridos são</p>
                 <p>manipulados pelas farmácias credenciadas de acordo com as normas da Anvisa.</p>
-                <p className="mt-4">Copyright 2025 Clínica Médica Metamorphose LTDA™. Todos os direitos reservados.</p>
+                <p className="mt-4">CNPJ: 60.299.987/0001-19</p>
+                <p className="mt-2">Copyright 2025 Clínica Médica Metamorphose LTDA™. Todos os direitos reservados.</p>
               </div>
               <div className="pt-8">
                 <img src="/img/payment-methods.svg" alt="Payment Methods"/>
