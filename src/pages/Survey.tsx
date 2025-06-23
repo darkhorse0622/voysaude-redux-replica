@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
+import HeaderSurvey from '@/components/HeaderSurvey';
 
 const TypeformSurvey = () => {
   const [formData, setFormData] = useState(null);
@@ -21,7 +22,7 @@ const TypeformSurvey = () => {
   // Load form data on component mount
   const form_id = import.meta.env.VITE_TYPE_FROM_FORM_ID;
   const api_token = import.meta.env.VITE_TYPE_FORM_API_KEY;
-  
+
   useEffect(() => {
       // Use the proxy endpoint instead of direct API call
       axios.get(`/api/typeform/forms/${form_id}`, {
@@ -32,7 +33,6 @@ const TypeformSurvey = () => {
       })
           .then(response => {
           setFormData(response.data);
-          console.log(response.data);
       })
       .catch(error => {
           console.error(error);
@@ -44,14 +44,15 @@ const TypeformSurvey = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading survey...</p>
+          <p className="mt-4 text-primary">Loading survey...</p>
         </div>
       </div>
     );
   }
 
   const currentField = formData.fields[currentFieldIndex];
-
+  console.log(currentField);
+  
   // Get the next field based on logic rules
   const getNextField = () => {
     if (!currentField) return null;
@@ -159,10 +160,10 @@ const TypeformSurvey = () => {
     switch (currentField.type) {
       case 'statement':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 whitespace-pre-line leading-relaxed">
+              <p className="text-lg text-primary whitespace-pre-line leading-relaxed">
                 {currentField.properties.description}
               </p>
             )}
@@ -178,10 +179,10 @@ const TypeformSurvey = () => {
 
       case 'multiple_choice':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
             <div className="space-y-3">
               {currentField.properties.allow_multiple_selection ? (
@@ -191,7 +192,7 @@ const TypeformSurvey = () => {
                     key={choice.id}
                     className={`flex items-start space-x-4 p-4 border rounded-lg cursor-pointer transition-all ${
                       answer?.includes(choice.ref) 
-                        ? 'border-orange-500 bg-orange-50' 
+                        ? 'border-primary bg-primary/5' 
                         : 'border-gray-200 hover:border-gray-300 bg-white'
                     }`}
                     onClick={() => {
@@ -205,13 +206,20 @@ const TypeformSurvey = () => {
                   >
                     <Checkbox
                       checked={answer?.includes(choice.ref) || false}
-                      onChange={() => {}}
+                      onCheckedChange={() => {
+                        const newAnswer = answer || [];
+                        if (newAnswer.includes(choice.ref)) {
+                          handleAnswerChange(newAnswer.filter(ref => ref !== choice.ref));
+                        } else {
+                          handleAnswerChange([...newAnswer, choice.ref]);
+                        }
+                      }}
                       className="mt-1"
                     />
                     <div className="flex-1">
-                      <p className="text-gray-800 font-medium">{choice.label}</p>
+                      <p className="text-primary font-medium">{choice.label}</p>
                       {choice.properties?.description && (
-                        <p className="text-sm text-gray-600 mt-1">{choice.properties.description}</p>
+                        <p className="text-sm text-primary mt-1">{choice.properties.description}</p>
                       )}
                     </div>
                   </div>
@@ -228,15 +236,16 @@ const TypeformSurvey = () => {
                       key={choice.id}
                       className={`flex items-start space-x-4 p-4 border rounded-lg cursor-pointer transition-all ${
                         answer === choice.ref 
-                          ? 'border-orange-500 bg-orange-50' 
+                          ? 'border-primary bg-primary/5' 
                           : 'border-gray-200 hover:border-gray-300 bg-white'
                       }`}
+                      onClick={() => handleAnswerChange(choice.ref)}
                     >
                       <RadioGroupItem value={choice.ref} id={choice.id} className="mt-1" />
                       <Label htmlFor={choice.id} className="flex-1 cursor-pointer">
-                        <p className="text-gray-800 font-medium">{choice.label}</p>
+                        <p className="text-primary font-medium">{choice.label}</p>
                         {choice.properties?.description && (
-                          <p className="text-sm text-gray-600 mt-1">{choice.properties.description}</p>
+                          <p className="text-sm text-primary mt-1">{choice.properties.description}</p>
                         )}
                       </Label>
                     </div>
@@ -249,18 +258,18 @@ const TypeformSurvey = () => {
 
       case 'dropdown':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
             <Select value={answer || ''} onValueChange={handleAnswerChange}>
-              <SelectTrigger className="w-full h-14 text-base border-gray-200 focus:border-orange-500">
+              <SelectTrigger className="w-full h-14 text-base border-gray-200">
                 <SelectValue placeholder="Selecione uma opção" />
               </SelectTrigger>
               <SelectContent>
                 {currentField.properties.choices.map((choice) => (
-                  <SelectItem key={choice.id} value={choice.ref}>
+                  <SelectItem key={choice.id} value={choice.ref} className='text-primary'>
                     {choice.label}
                   </SelectItem>
                 ))}
@@ -271,16 +280,16 @@ const TypeformSurvey = () => {
 
       case 'short_text':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
             <Input
               type="text"
               value={answer || ''}
               onChange={(e) => handleAnswerChange(e.target.value)}
-              className="h-14 text-base border-gray-200 focus:border-orange-500"
+              className="h-14 text-base border-gray-200 "
               placeholder="Digite sua resposta aqui..."
             />
           </div>
@@ -288,15 +297,15 @@ const TypeformSurvey = () => {
 
       case 'long_text':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
             <Textarea
               value={answer || ''}
               onChange={(e) => handleAnswerChange(e.target.value)}
-              className="min-h-32 text-base border-gray-200 focus:border-orange-500"
+              className="min-h-32 text-base border-gray-200 "
               placeholder="Digite sua resposta aqui..."
             />
           </div>
@@ -304,10 +313,10 @@ const TypeformSurvey = () => {
 
       case 'number':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
             <Input
               type="number"
@@ -315,7 +324,7 @@ const TypeformSurvey = () => {
               onChange={(e) => handleAnswerChange(e.target.value)}
               min={currentField.validations?.min_value}
               max={currentField.validations?.max_value}
-              className="h-14 text-base border-gray-200 focus:border-orange-500"
+              className="h-14 text-base border-gray-200 "
               placeholder="Digite um número..."
             />
           </div>
@@ -323,37 +332,34 @@ const TypeformSurvey = () => {
 
       case 'date':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
             <div className="relative">
               <Input
                 type="date"
                 value={answer || ''}
                 onChange={(e) => handleAnswerChange(e.target.value)}
-                className="h-14 text-base border-gray-200 focus:border-orange-500"
+                className="h-14 text-base border-gray-200 w-full [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:left-4 [&::-webkit-calendar-picker-indicator]:top-1/2 [&::-webkit-calendar-picker-indicator]:-translate-y-1/2 pl-12"
               />
-              <div className="absolute inset-0 flex items-center px-4 pointer-events-none">
-                <span className="text-gray-400 text-sm">DD/MM/AAAA</span>
-              </div>
             </div>
           </div>
         );
 
       case 'email':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
             <Input
               type="email"
               value={answer || ''}
               onChange={(e) => handleAnswerChange(e.target.value)}
-              className="h-14 text-base border-gray-200 focus:border-orange-500"
+              className="h-14 text-base border-gray-200 "
               placeholder="seu@email.com"
             />
           </div>
@@ -361,16 +367,16 @@ const TypeformSurvey = () => {
 
       case 'phone_number':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
             <Input
               type="tel"
               value={answer || ''}
               onChange={(e) => handleAnswerChange(e.target.value)}
-              className="h-14 text-base border-gray-200 focus:border-orange-500"
+              className="h-14 text-base border-gray-200 "
               placeholder="(00) 00000-0000"
             />
           </div>
@@ -378,12 +384,12 @@ const TypeformSurvey = () => {
 
       case 'inline_group':
         return (
-          <div className="space-y-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 leading-tight">{currentField.title}</h1>
+          <div className="space-y-6 text-primary">
+            <h1 className="text-xl md:text-2xl font-semibold text-primary leading-tight">{currentField.title}</h1>
             {currentField.properties.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">{currentField.properties.description}</p>
+              <p className="text-lg text-primary leading-relaxed">{currentField.properties.description}</p>
             )}
-            <div className="space-y-6">
+            <div className="space-y-6 text-primary">
               {currentField.properties.fields.map((subField) => {
                 const subAnswer = answer?.[subField.ref] || '';
                 return (
@@ -399,7 +405,7 @@ const TypeformSurvey = () => {
                           ...answer,
                           [subField.ref]: e.target.value
                         })}
-                        className="h-14 text-base border-gray-200 focus:border-orange-500"
+                        className="h-14 text-base border-gray-200 "
                         placeholder="seu@email.com"
                       />
                     ) : subField.type === 'phone_number' ? (
@@ -410,7 +416,7 @@ const TypeformSurvey = () => {
                           ...answer,
                           [subField.ref]: e.target.value
                         })}
-                        className="h-14 text-base border-gray-200 focus:border-orange-500"
+                        className="h-14 text-base border-gray-200 "
                         placeholder="(00) 00000-0000"
                       />
                     ) : (
@@ -421,7 +427,7 @@ const TypeformSurvey = () => {
                           ...answer,
                           [subField.ref]: e.target.value
                         })}
-                        className="h-14 text-base border-gray-200 focus:border-orange-500"
+                        className="h-14 text-base border-gray-200 "
                       />
                     )}
                   </div>
@@ -440,7 +446,7 @@ const TypeformSurvey = () => {
     const screen = currentThankyouScreen || formData.thankyou_screens.find(s => s.ref === 'default_tys');
     
     return (
-      <div className="space-y-6 text-center">
+      <div className="space-y-6 text-primary text-center">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{screen.title}</h1>
         {screen.properties.description && (
           <p className="text-lg text-gray-600 whitespace-pre-line leading-relaxed">
@@ -491,6 +497,7 @@ const TypeformSurvey = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <HeaderSurvey/>
       {/* Progress bar */}
       {!isComplete && formData.settings.show_progress_bar && (
         <div className="fixed top-0 left-0 right-0 h-1 bg-gray-200 z-50">
@@ -501,7 +508,7 @@ const TypeformSurvey = () => {
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-4 py-8 max-w-2xl mt-16">
         <div className="pt-4">
           {/* Survey content */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">

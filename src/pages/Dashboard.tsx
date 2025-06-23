@@ -104,11 +104,18 @@ const Dashboard = () => {
   const testimonials = [
     {
       id: 1,
-      name: 'Nathalie',
-      subtitle: '- 8,5kg em 2 meses',
-      text: '“Conheci a Voy através de uma amiga que teve ótimos resultados. Foi a melhor decisão que tomei. Cheguei a pesar 92,3 kg, vivia cansada, sem vontade de fazer nada e com dores. Agora me sinto disposta, durmo melhor e meu humor melhorou. E minhas calças jeans voltaram a servir! Mudanças que vou levar a longo prazo porque foram personalizadas pra mim. Não só recomendaria a Voy, como já recomendei!”',
+      name: 'Kézia',
+      subtitle: '- 28kg em 4 meses',
+      text: `“eu nome é Kézia, tenho 29 anos, 1,75m de altura, e quando comecei o protocolo de emagrecimento na clínica, estava com 102,8kg. Durante muito tempo, fiquei estagnada nesse peso mesmo já tendo perdido 15kg com academia e dieta (cheguei a pesar 117kg no meu maior peso), meu corpo simplesmente não respondia mais.
+      Foi então que conheci a clínica através de uma amiga que teve um resultado incrível. Em novembro de 2024, iniciei meu tratamento cheia de esperança. Antes de tudo, fiz exames para checar minhas vitaminas, e estava tudo certo. Comecei com a dose de 2,5mg do protocolo e, para minha surpresa, no primeiro mês eliminei 10kg!
+
+Com acompanhamento da Dra., fomos ajustando a dosagem até o máximo de 7,5mg. Em apenas 4 meses, consegui eliminar 28kg de forma saudável e eficaz.
+
+Hoje, posso dizer com orgulho: sou outra mulher. Mais leve no corpo e na alma. Redescobri minha autoestima, minha confiança e, principalmente, o amor por mim mesma.
+
+Esse protocolo transformou minha vida!”`,
       beforeAfter: {
-        before: '/img/3.jpg',
+        before: '/img/1.jpeg',
         after: '/img/7.jpg',
         period: 'Dia 1',
         periodAfter: 'Mês 12'
@@ -116,11 +123,14 @@ const Dashboard = () => {
     },
     {
       id: 2,
-      name: 'Keila',
+      name: '“keziafgs',
       subtitle: '- 6,5kg em 1 mês',
-      text: '“Sempre quis ter hábitos saudáveis, mas com duas filhas era difícil encontrar uma dieta que encaixasse na rotina e que funcionasse também para elas, sem ser super restritiva. A nutricionista montou um cardápio super bacana e ilustrativo que facilitou muito! Hoje, lido melhor com a compulsão e me sinto disposta para me exercitar. Isso melhorou meu tempo em família, e minhas filhas estão felizes com as mudanças!”',
+      text: `“
+Não tenho palavras para expressar minha gratidão! Esse tratamento transformou completamente a minha vida. Hoje me sinto uma nova mulher, mais confiante, mais feliz e, acima de tudo, apaixonada por mim mesma a cada dia.
+
+Obrigada por fazer parte dessa jornada tão importante e por me devolver o brilho que estava apagado”`,
       beforeAfter: {
-        before: '/img/6.jpg',
+        before: '/img/2.jpeg',
         after: '/img/2.jpg',
         period: 'Dia 2',
         periodAfter: 'Mês 2'
@@ -128,11 +138,13 @@ const Dashboard = () => {
     },
     {
       id: 3,
-      name: 'Nathalie',
+      name: 'thais',
       subtitle: '- 8,5kg em 2 meses',
-      text: '“Conheci a Voy através de uma amiga que teve ótimos resultados. Foi a melhor decisão que tomei. Cheguei a pesar 92,3 kg, vivia cansada, sem vontade de fazer nada e com dores. Agora me sinto disposta, durmo melhor e meu humor melhorou. E minhas calças jeans voltaram a servir! Mudanças que vou levar a longo prazo porque foram personalizadas pra mim. Não só recomendaria a Voy, como já recomendei!”',
+      text: `“Decidi que não queria estar mais ali, dei o meu melhor na minha condição atual! E simmm! O Protocolo de emagrecimento Metamorphose mudou a minha vida, e não diminui o meu esforço pois nenhum processo de emagrecimento é fácil, seja ele qual for!
+
+Ame a sua evolução”`,
       beforeAfter: {
-        before: '/img/4.jpg',
+        before: '/img/3.jpeg',
         after: '/img/8.png',
         period: 'Dia 1',
         periodAfter: 'Semana 3'
@@ -294,8 +306,8 @@ const Dashboard = () => {
                 <CarouselContent className='mt-8'>
                   {testimonials.map((testimonial) => (
                     <CarouselItem key={testimonial.id}>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                        <div className="bg-gray-50 rounded-2xl p-8 order-2">
+                      <div className="flex flex-col md:flex-row gap-8 items-center">
+                        <div className=" p-8 order-2">
                           <h3 className="text-xl text-primary mb-8">
                             {testimonial.name}, {testimonial.subtitle}
                           </h3>
@@ -309,21 +321,11 @@ const Dashboard = () => {
                             <img
                               src={testimonial.beforeAfter.before}
                               alt={`${testimonial.name} antes`}
-                              className="w-full h-80 object-cover rounded-lg"
+                              className="h-full object-cover rounded-lg  md:max-w-[350px] md:w-[350px]"
                             />
-                            <div className="absolute bottom-3 left-3 bg-green-300 text-primary px-3 py-1 rounded-sm text-sm font-medium">
+                            {/* <div className="absolute bottom-3 left-3 bg-green-300 text-primary px-3 py-1 rounded-sm text-sm font-medium">
                               {testimonial.beforeAfter.period}
-                            </div>
-                          </div>
-                          <div className="flex-1 relative">
-                            <img
-                              src={testimonial.beforeAfter.after}
-                              alt={`${testimonial.name} depois`}
-                              className="w-full h-80 object-cover rounded-lg"
-                            />
-                            <div className="absolute bottom-3 left-3 bg-green-300 text-primary px-3 py-1 rounded-sm text-sm font-medium">
-                              {testimonial.beforeAfter.periodAfter}
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </div>
