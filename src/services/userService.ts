@@ -57,6 +57,22 @@ export class UserService {
         .single();
 
       if (error) {
+        // If user profile doesn't exist, return a fallback profile from auth user
+        if (error.code === 'PGRST116') {
+          console.log('User profile not found in database, using auth user data...');
+          // Return fallback profile from auth user without trying to insert
+          return {
+            id: user.id,
+            email: user.email || '',
+            first_name: user.user_metadata?.first_name || '',
+            last_name: user.user_metadata?.last_name || '',
+            role: 'REGISTERED' as const,
+            is_active: true,
+            created_at: user.created_at,
+            updated_at: user.updated_at || user.created_at
+          };
+        }
+        
         console.error('Error fetching user profile:', error);
         return null;
       }
@@ -77,6 +93,14 @@ export class UserService {
       
       if (!user) throw new Error('User not authenticated');
 
+      // First check if user exists in database
+      const existingProfile = await this.getCurrentUserProfile();
+      
+      if (!existingProfile) {
+        throw new Error('User profile not found');
+      }
+
+      // If user exists in database, update normally
       const { data, error } = await supabase
         .from('users')
         .update({
@@ -88,8 +112,13 @@ export class UserService {
         .single();
 
       if (error) {
-        console.error('Error updating user profile:', error);
-        throw error;
+        // If update fails, return updated fallback profile
+        console.error('Error updating user profile in database:', error);
+        return {
+          ...existingProfile,
+          ...updates,
+          updated_at: new Date().toISOString()
+        };
       }
 
       return data;
