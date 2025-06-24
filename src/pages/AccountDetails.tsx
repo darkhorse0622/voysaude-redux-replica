@@ -43,7 +43,7 @@ const AccountDetails = () => {
                   <h2 className="text-lg font-semibold text-primary">Informações pessoais</h2>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-gray-800 font-medium">Robert Arbuckle</p>
+                  <p className="text-primary font-medium">Robert Arbuckle</p>
                   <p className="text-primary">{user?.email || 'fastleopard9372@gmail.com'}</p>
                 </div>
                 <button className="mt-4 text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center" onClick={()=>navigate('/personal-data')}>
