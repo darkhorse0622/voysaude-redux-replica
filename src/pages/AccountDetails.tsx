@@ -1,13 +1,34 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, ArrowRight } from 'lucide-react';
+import { ArrowLeft, User, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import HeaderSurvey from '@/components/HeaderSurvey';
 
 const AccountDetails = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <HeaderSurvey />
+        <div className="container mx-auto px-4 py-8 max-w-md mt-16">
+          <div className="bg-white rounded-lg shadow-sm p-8">
+            <div className="flex items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+              <span className="ml-3 text-primary">Carregando dados...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    navigate('/auth/login');
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -43,8 +64,8 @@ const AccountDetails = () => {
                   <h2 className="text-lg font-semibold text-primary">Informações pessoais</h2>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-primary font-medium">Robert Arbuckle</p>
-                  <p className="text-primary">{user?.email || 'fastleopard9372@gmail.com'}</p>
+                  <p className="text-primary font-medium">{user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : 'Nome não informado'}</p>
+                  <p className="text-primary">{user?.email || 'Email não informado'}</p>
                 </div>
                 <button className="mt-4 text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center" onClick={()=>navigate('/personal-data')}>
                   Alterar

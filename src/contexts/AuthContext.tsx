@@ -3,14 +3,34 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+interface AuthUser {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone?: string;
+  birth?: string;
+  cpf?: string;
+  role: string;
+  is_active: boolean;
+}
+
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (userData: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    birth?: Date;
+    phone?: string;
+    cpf?: string;
+  }) => Promise<{ error: { message: string } | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: { message: string } | null }>;
   signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<{ error: any }>;
+  resetPassword: (email: string) => Promise<{ error: { message: string } | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,7 +44,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -33,99 +53,134 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session);
-        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Extract user data from Supabase Auth user metadata
+          const authUser: AuthUser = {
+            id: session.user.id,
+            first_name: session.user.user_metadata?.first_name || '',
+            last_name: session.user.user_metadata?.last_name || '',
+            email: session.user.email || '',
+            phone: session.user.user_metadata?.phone || '',
+            birth: session.user.user_metadata?.birth || '',
+            cpf: session.user.user_metadata?.cpf || '',
+            role: session.user.user_metadata?.role || 'REGISTERED',
+            is_active: true
+          };
+          setUser(authUser);
+        } else {
+          setUser(null);
+        }
         setLoading(false);
-
-        // Handle user creation on signup confirmation
-        if (event === 'SIGNED_UP' && session?.user) {
-          try {
-            // Create user profile in the database
-            const { error } = await supabase
-              .from('users')
-              .insert([
-                {
-                  id: session.user.id,
-                  email: session.user.email,
-                  first_name: session.user.user_metadata?.first_name || '',
-                  last_name: session.user.user_metadata?.last_name || '',
-                  role: 'REGISTERED',
-                  is_active: true,
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString()
-                }
-              ]);
-
-            if (error) {
-              console.error('Error creating user profile:', error);
-            }
-          } catch (error) {
-            console.error('Failed to create user profile:', error);
-          }
-        }
-
-        // Update last login when user signs in
-        if (event === 'SIGNED_IN' && session?.user) {
-          try {
-            await supabase
-              .from('users')
-              .update({
-                last_login: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', session.user.id);
-          } catch (error) {
-            console.error('Failed to update last login:', error);
-          }
-        }
       }
     );
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      if (session?.user) {
+        const authUser: AuthUser = {
+          id: session.user.id,
+          first_name: session.user.user_metadata?.first_name || '',
+          last_name: session.user.user_metadata?.last_name || '',
+          email: session.user.email || '',
+          phone: session.user.user_metadata?.phone || '',
+          birth: session.user.user_metadata?.birth || '',
+          cpf: session.user.user_metadata?.cpf || '',
+          role: session.user.user_metadata?.role || 'REGISTERED',
+          is_active: true
+        };
+        setUser(authUser);
+      }
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, userData?: any) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: userData
+  const signUp = async (userData: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    birth?: Date;
+    phone?: string;
+    cpf?: string;
+  }) => {
+    try {
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { error } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+            phone: userData.phone || '',
+            birth: userData.birth?.toISOString().split('T')[0] || '',
+            cpf: userData.cpf || '',
+            role: 'REGISTERED'
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Signup error:', error);
+        return { error: { message: error.message } };
       }
-    });
-    return { error };
+
+      return { error: null };
+    } catch (error) {
+      console.error('Sign up error:', error);
+      return { error: { message: 'Failed to create account' } };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Sign in error:', error);
+        return { error: { message: error.message } };
+      }
+
+      return { error: null };
+    } catch (error) {
+      console.error('Sign in error:', error);
+      return { error: { message: 'Failed to sign in' } };
+    }
   };
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    console.log(error);
-    
-    if (error) throw error;
+    if (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/auth/reset-password`;
-    
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectUrl,
-    });
-    return { error };
+    try {
+      const redirectUrl = `${window.location.origin}/auth/reset-password`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        return { error: { message: error.message } };
+      }
+
+      return { error: null };
+    } catch (error) {
+      console.error('Reset password error:', error);
+      return { error: { message: 'Failed to reset password' } };
+    }
   };
 
   const value = {

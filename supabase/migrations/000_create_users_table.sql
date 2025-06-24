@@ -1,14 +1,16 @@
 -- Create users table
 CREATE TABLE IF NOT EXISTS public.users (
-    id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    birth DATE,
+    phone TEXT,
+    cpf TEXT UNIQUE,
     email TEXT UNIQUE NOT NULL,
-    first_name TEXT,
-    last_name TEXT,
+    password TEXT NOT NULL,
     role TEXT DEFAULT 'REGISTERED' CHECK (role IN ('VISITOR', 'REGISTERED', 'SUBSCRIBED', 'ADMIN')),
     is_active BOOLEAN DEFAULT true,
     avatar_url TEXT,
-    phone TEXT,
-    date_of_birth DATE,
     preferences JSONB DEFAULT '{}',
     last_login TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -17,52 +19,17 @@ CREATE TABLE IF NOT EXISTS public.users (
 
 -- Add indexes
 CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
+CREATE INDEX IF NOT EXISTS idx_users_cpf ON public.users(cpf);
 CREATE INDEX IF NOT EXISTS idx_users_role ON public.users(role);
 CREATE INDEX IF NOT EXISTS idx_users_is_active ON public.users(is_active);
 
--- Enable Row Level Security
-ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+-- Disable Row Level Security for custom authentication
+-- We'll handle permissions in the application layer
+ALTER TABLE public.users DISABLE ROW LEVEL SECURITY;
 
--- Create policies
-CREATE POLICY "Users can view their own profile" ON public.users
-    FOR SELECT
-    TO authenticated
-    USING (auth.uid() = id);
-
-CREATE POLICY "Users can insert their own profile" ON public.users
-    FOR INSERT
-    TO authenticated
-    WITH CHECK (auth.uid() = id);
-
-CREATE POLICY "Users can update their own profile" ON public.users
-    FOR UPDATE
-    TO authenticated
-    USING (auth.uid() = id)
-    WITH CHECK (auth.uid() = id);
-
--- Admins can view all users
-CREATE POLICY "Admins can view all users" ON public.users
-    FOR SELECT
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users 
-            WHERE id = auth.uid() 
-            AND role = 'ADMIN'
-        )
-    );
-
--- Admins can update all users
-CREATE POLICY "Admins can update all users" ON public.users
-    FOR UPDATE
-    TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.users 
-            WHERE id = auth.uid() 
-            AND role = 'ADMIN'
-        )
-    );
+-- Grant necessary permissions to the authenticated role
+GRANT ALL ON public.users TO authenticated;
+GRANT ALL ON public.users TO anon;
 
 -- Create storage bucket for user content if it doesn't exist
 INSERT INTO storage.buckets (id, name, public)

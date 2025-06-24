@@ -13,7 +13,6 @@ import HeaderSurvey from '@/components/HeaderSurvey';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import type { SurveyResponse } from '@/types/survey';
 
 const TypeformSurvey = () => {
   const { user, loading: authLoading } = useAuth();
@@ -78,7 +77,7 @@ const TypeformSurvey = () => {
   };
 
   // Function to submit answers to Supabase
-  const submitAnswersToSupabase = async () => {
+  const submitAnswersToBackend = async () => {
     if (!user) {
       setSubmitError('You must be logged in to submit the survey.');
       return;
@@ -88,7 +87,7 @@ const TypeformSurvey = () => {
     setSubmitError(null);
 
     try {
-      const surveyResponse: Omit<SurveyResponse, 'id' | 'created_at' | 'updated_at'> = {
+      const surveyResponse = {
         user_id: user.id,
         form_id: form_id,
         form_title: formData.title || 'Untitled Survey',
@@ -105,7 +104,7 @@ const TypeformSurvey = () => {
 
       console.log('Submitting survey response to Supabase:', surveyResponse);
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('survey_responses')
         .insert([surveyResponse])
         .select()
@@ -219,11 +218,11 @@ const TypeformSurvey = () => {
     if (!nextDestination) {
       // Submit answers before completing
       try {
-        await submitAnswersToSupabase();
+        await submitAnswersToBackend();
         setIsComplete(true);
       } catch (error) {
-        // Handle submission error
-        console.error('Failed to submit answers');
+        // Handle submission error - you might want to show a retry option
+        console.error('Failed to submit answers', error);
       }
       return;
     }
@@ -231,16 +230,15 @@ const TypeformSurvey = () => {
     if (nextDestination.type === 'thankyou') {
       // Submit answers before showing thank you screen
       try {
-        await submitAnswersToSupabase();
-        // Find the thank you screen
+        await submitAnswersToBackend();
         const thankyouScreen = formData.thankyou_screens.find(
           screen => screen.ref === nextDestination.value
-        ) || formData.thankyou_screens[0];
-        
+        );
         setCurrentThankyouScreen(thankyouScreen);
         setIsComplete(true);
       } catch (error) {
-        console.error('Failed to submit answers');
+        // Handle submission error
+        console.error('Failed to submit answers', error);
       }
     } else if (nextDestination.type === 'field') {
       const nextFieldIndex = formData.fields.findIndex(
@@ -273,7 +271,7 @@ const TypeformSurvey = () => {
   // Function to manually submit answers (optional - for testing)
   const handleManualSubmit = async () => {
     try {
-      await submitAnswersToSupabase();
+      await submitAnswersToBackend();
       alert('Answers submitted successfully!');
     } catch (error) {
       alert('Failed to submit answers. Please try again.');
@@ -589,20 +587,16 @@ const TypeformSurvey = () => {
           />
         )}
         {submitError && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              {submitError}
-              <Button 
-                onClick={handleManualSubmit}
-                className="mt-2 ml-4 bg-red-500 hover:bg-red-600 text-white"
-                size="sm"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Submitting...' : 'Retry Submission'}
-              </Button>
-            </AlertDescription>
-          </Alert>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+            {submitError}
+            <Button 
+              onClick={handleManualSubmit}
+              className="mt-2 bg-red-500 hover:bg-red-600 text-white"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Submitting...' : 'Retry Submission'}
+            </Button>
+          </div>
         )}
         {screen.properties.show_button && (
           <Button className="mt-8 h-14 px-8 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-lg transition-colors">

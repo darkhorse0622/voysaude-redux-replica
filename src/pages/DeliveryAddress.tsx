@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Search } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,9 @@ const DeliveryAddress = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [searchingCep, setSearchingCep] = useState(false);
+  const [addresses, setAddresses] = useState<DeliveryAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
+  const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     cep: '',
     address: '',
@@ -28,37 +30,115 @@ const DeliveryAddress = () => {
   });
 
   useEffect(() => {
-    const loadDeliveryAddress = async () => {
+    const loadDeliveryAddresses = async () => {
       if (!user) {
         navigate('/auth/login');
         return;
       }
 
       try {
-        const defaultAddress = await UserService.getDefaultDeliveryAddress();
+        // Load all addresses for the user
+        const userAddresses = await UserService.getDeliveryAddressesByUserId(user.id);
+        setAddresses(userAddresses);
+
+        // Find default address and set as selected
+        const defaultAddress = userAddresses.find(addr => addr.is_default);
         if (defaultAddress) {
-          setFormData({
-            cep: defaultAddress.cep || '',
-            address: defaultAddress.address || '',
-            number: defaultAddress.number || '',
-            complement: defaultAddress.complement || '',
-            neighborhood: defaultAddress.neighborhood || '',
-            city: defaultAddress.city || '',
-            state: defaultAddress.state || ''
-          });
+          setSelectedAddressId(defaultAddress.id || '');
+        } else if (userAddresses.length === 0) {
+          // If no addresses exist, show the add form
+          setShowAddForm(true);
         }
       } catch (error) {
-        console.error('Error loading delivery address:', error);
+        console.error('Error loading delivery addresses:', error);
+        // If error or no addresses, show add form
+        setShowAddForm(true);
       } finally {
         setLoading(false);
       }
     };
 
-    loadDeliveryAddress();
+    loadDeliveryAddresses();
   }, [user, navigate]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddressSelect = (addressId: string) => {
+    setSelectedAddressId(addressId);
+    const selected = addresses.find(addr => addr.id === addressId);
+    if (selected) {
+      setFormData({
+        cep: selected.cep || '',
+        address: selected.address || '',
+        number: selected.number || '',
+        complement: selected.complement || '',
+        neighborhood: selected.neighborhood || '',
+        city: selected.city || '',
+        state: selected.state || ''
+      });
+    }
+  };
+
+  const handleAddNewAddress = () => {
+    setShowAddForm(true);
+    setSelectedAddressId('');
+    setFormData({
+      cep: '',
+      address: '',
+      number: '',
+      complement: '',
+      neighborhood: '',
+      city: '',
+      state: ''
+    });
+  };
+
+  const handleSelectExisting = async () => {
+    if (!selectedAddressId) {
+      toast({
+        title: "Erro",
+        description: "Selecione um endereço.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      // Mark selected address as default
+      const addresses = await UserService.getDeliveryAddresses();
+      const updatedAddresses = addresses.map(addr => ({
+        ...addr,
+        is_default: addr.id === selectedAddressId
+      }));
+
+      const profile = await UserService.getCurrentUserProfile();
+      if (profile) {
+        await UserService.updateUserProfile({
+          preferences: {
+            ...profile.preferences,
+            addresses: updatedAddresses
+          }
+        });
+      }
+
+      toast({
+        title: "Endereço selecionado!",
+        description: "Endereço de entrega atualizado com sucesso.",
+      });
+
+      navigate('/account-details');
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: error instanceof Error ? error.message : "Erro ao selecionar endereço.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const validateForm = () => {
@@ -89,15 +169,6 @@ const DeliveryAddress = () => {
       return false;
     }
 
-    // CEP validation (Brazilian format)
-    if (formData.cep && !/^\d{5}-?\d{3}$/.test(formData.cep)) {
-      toast({
-        title: "Erro",
-        description: "Digite um CEP válido no formato 00000-000.",
-        variant: "destructive",
-      });
-      return false;
-    }
 
     return true;
   };
@@ -124,7 +195,13 @@ const DeliveryAddress = () => {
         description: "Seu endereço de entrega foi salvo com sucesso.",
       });
 
-      navigate('/account-details');
+      // Reload addresses to show the new one
+      if (user) {
+        const userAddresses = await UserService.getDeliveryAddressesByUserId(user.id);
+        setAddresses(userAddresses);
+        setShowAddForm(false);
+      }
+
     } catch (error) {
       toast({
         title: "Erro",
@@ -136,46 +213,6 @@ const DeliveryAddress = () => {
     }
   };
 
-  const handleSearchCep = async () => {
-    if (!formData.cep.trim()) {
-      toast({
-        title: "Erro",
-        description: "Digite um CEP para buscar.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSearchingCep(true);
-
-    try {
-      const result = await UserService.searchCEP(formData.cep);
-      
-      if (result) {
-        setFormData(prev => ({
-          ...prev,
-          cep: result.cep,
-          address: result.address,
-          neighborhood: result.neighborhood,
-          city: result.city,
-          state: result.state
-        }));
-
-        toast({
-          title: "CEP encontrado!",
-          description: "Endereço preenchido automaticamente.",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: error instanceof Error ? error.message : "Erro ao buscar CEP.",
-        variant: "destructive",
-      });
-    } finally {
-      setSearchingCep(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -221,37 +258,94 @@ const DeliveryAddress = () => {
           <div className="p-6">
             <h1 className="text-2xl font-bold text-primary mb-8">Endereço de entrega</h1>
             
-            <div className="space-y-6">
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <Label htmlFor="cep" className="text-sm font-medium text-primary mb-2 block">
-                    CEP
-                  </Label>
-                  <Input
-                    id="cep"
-                    value={formData.cep}
-                    onChange={(e) => handleInputChange('cep', e.target.value)}
-                    placeholder="00000-000"
-                    className="w-full h-12"
-                    disabled={saving || searchingCep}
-                  />
+            {!showAddForm && addresses.length > 0 ? (
+              /* Show existing addresses */
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  {addresses.map((address) => (
+                    <div
+                      key={address.id}
+                      className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                        selectedAddressId === address.id
+                          ? 'border-orange-500 bg-orange-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => handleAddressSelect(address.id || '')}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-primary">
+                            {address.address} {address.number && `, ${address.number}`}
+                          </p>
+                          {address.complement && (
+                            <p className="text-sm text-gray-600">{address.complement}</p>
+                          )}
+                          <p className="text-sm text-gray-600">
+                            {address.neighborhood}, {address.city}
+                          </p>
+                          {address.state && (
+                            <p className="text-sm text-gray-600">{address.state}</p>
+                          )}
+                          {address.cep && (
+                            <p className="text-sm text-gray-600">CEP: {address.cep}</p>
+                          )}
+                          {address.is_default && (
+                            <span className="inline-block bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded mt-2">
+                              Padrão
+                            </span>
+                          )}
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          selectedAddressId === address.id
+                            ? 'border-orange-500 bg-orange-500'
+                            : 'border-gray-300'
+                        }`} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="pt-7">
+
+                <div className="flex gap-3">
                   <Button
-                    onClick={handleSearchCep}
-                    disabled={saving || searchingCep || !formData.cep.trim()}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-6 h-12"
+                    size='sm'
+                    onClick={handleSelectExisting}
+                    disabled={saving || !selectedAddressId}
+                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-6 text-lg font-medium"
                   >
-                    {searchingCep ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
+                    {saving ? (
                       <>
-                        <Search className="w-4 h-4 mr-2" />
-                        Buscar
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Salvando...
                       </>
+                    ) : (
+                      'Usar endereço selecionado'
                     )}
                   </Button>
+                  <Button
+                    onClick={handleAddNewAddress}
+                    variant="outline"
+                    size='sm'
+                    className="px-6 py-6 text-lg font-medium"
+                  >
+                    Adicionar novo
+                  </Button>
                 </div>
+              </div>
+            ) : (
+              /* Show add new address form */
+              <div className="space-y-6">
+              <div>
+                <Label htmlFor="cep" className="text-sm font-medium text-primary mb-2 block">
+                  CEP (opcional)
+                </Label>
+                <Input
+                  id="cep"
+                  value={formData.cep}
+                  onChange={(e) => handleInputChange('cep', e.target.value)}
+                  placeholder="00000-000"
+                  className="w-full h-12"
+                  disabled={saving}
+                />
               </div>
 
               <div>
@@ -341,21 +435,33 @@ const DeliveryAddress = () => {
                 </div>
               )}
 
-              <Button
-                onClick={handleSave}
-                disabled={saving}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-6 text-lg font-medium"
-              >
-                {saving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Salvando...
-                  </>
-                ) : (
-                  'Salvar endereço de entrega'
+              <div className="flex gap-3">
+                {addresses.length > 0 && (
+                  <Button
+                    onClick={() => setShowAddForm(false)}
+                    variant="outline"
+                    className="px-6 py-6 text-lg font-medium"
+                  >
+                    Voltar
+                  </Button>
                 )}
-              </Button>
+                <Button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-6 text-lg font-medium"
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    'Salvar endereço de entrega'
+                  )}
+                </Button>
+              </div>
             </div>
+            )}
           </div>
         </div>
       </div>

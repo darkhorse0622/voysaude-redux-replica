@@ -49,57 +49,57 @@ const App = () => (
               <Route 
                 path="/survey" 
                 element={
-                  //<ProtectedRoute requiredRole="REGISTERED">
+                  <ProtectedRoute requiredRole="REGISTERED">
                     <Survey />
-                  //</ProtectedRoute>
+                  </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/user-dashboard" 
                 element={
-                  //<ProtectedRoute requiredRole="REGISTERED">
+                  <ProtectedRoute requiredRole="REGISTERED">
                     <UserDashboard />
-                  //</ProtectedRoute>
+                  </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/support" 
                 element={
-                  //<ProtectedRoute requiredRole="REGISTERED">
+                  <ProtectedRoute requiredRole="REGISTERED">
                     <Support />
-                  //</ProtectedRoute>
+                  </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/account-details" 
                 element={
-                  //<ProtectedRoute requiredRole="REGISTERED">
+                  <ProtectedRoute requiredRole="REGISTERED">
                     <AccountDetails />
-                  //</ProtectedRoute>
+                  </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/personal-data" 
                 element={
-                  //<ProtectedRoute requiredRole="REGISTERED">
+                  <ProtectedRoute requiredRole="REGISTERED">
                     <PersonalData />
-                  //</ProtectedRoute>
+                  </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/delivery-address" 
                 element={
-                  //<ProtectedRoute requiredRole="REGISTERED">
+                  <ProtectedRoute requiredRole="REGISTERED">
                     <DeliveryAddress />
-                  //</ProtectedRoute>
+                  </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/change-password" 
                 element={
-                  //<ProtectedRoute requiredRole="REGISTERED">
+                  <ProtectedRoute requiredRole="REGISTERED">
                     <ChangePassword />
-                  //</ProtectedRoute>
+                  </ProtectedRoute>
                 } 
               />
               

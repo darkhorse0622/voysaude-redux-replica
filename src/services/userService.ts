@@ -2,17 +2,18 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface UserProfile {
   id: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  first_name?: string;
-  last_name?: string;
+  birth?: string;
+  phone?: string;
+  cpf?: string;
   role?: 'VISITOR' | 'REGISTERED' | 'SUBSCRIBED' | 'ADMIN';
   is_active?: boolean;
   created_at?: string;
   updated_at?: string;
   last_login?: string;
   avatar_url?: string;
-  phone?: string;
-  date_of_birth?: string;
   preferences?: Record<string, unknown>;
 }
 
@@ -20,7 +21,8 @@ export interface UpdateUserProfileData {
   first_name?: string;
   last_name?: string;
   phone?: string;
-  date_of_birth?: string;
+  birth?: string;
+  cpf?: string;
   preferences?: Record<string, unknown>;
   avatar_url?: string | null;
 }
@@ -42,42 +44,32 @@ export interface DeliveryAddress {
 
 export class UserService {
   /**
-   * Get current user profile from users table
+   * Get current user profile from Supabase Auth
    */
   static async getCurrentUserProfile(): Promise<UserProfile | null> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) return null;
+      // Get user from Supabase Auth session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return null;
 
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      const user = session.user;
 
-      if (error) {
-        // If user profile doesn't exist, return a fallback profile from auth user
-        if (error.code === 'PGRST116') {
-          console.log('User profile not found in database, using auth user data...');
-          // Return fallback profile from auth user without trying to insert
-          return {
-            id: user.id,
-            email: user.email || '',
-            first_name: user.user_metadata?.first_name || '',
-            last_name: user.user_metadata?.last_name || '',
-            role: 'REGISTERED' as const,
-            is_active: true,
-            created_at: user.created_at,
-            updated_at: user.updated_at || user.created_at
-          };
-        }
-        
-        console.error('Error fetching user profile:', error);
-        return null;
-      }
-
-      return data;
+      return {
+        id: user.id,
+        first_name: user.user_metadata?.first_name || '',
+        last_name: user.user_metadata?.last_name || '',
+        email: user.email || '',
+        birth: user.user_metadata?.birth || '',
+        phone: user.user_metadata?.phone || '',
+        cpf: user.user_metadata?.cpf || '',
+        role: user.user_metadata?.role || 'REGISTERED',
+        is_active: true,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        last_login: user.last_sign_in_at,
+        avatar_url: user.user_metadata?.avatar_url || '',
+        preferences: { cpf: user.user_metadata?.cpf || '' }
+      };
     } catch (error) {
       console.error('Error in getCurrentUserProfile:', error);
       return null;
@@ -89,39 +81,54 @@ export class UserService {
    */
   static async updateUserProfile(updates: UpdateUserProfileData): Promise<UserProfile | null> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error('User not authenticated');
+      // Get current user session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) throw new Error('User not authenticated');
 
-      // First check if user exists in database
-      const existingProfile = await this.getCurrentUserProfile();
+      const currentUser = session.user;
       
-      if (!existingProfile) {
-        throw new Error('User profile not found');
-      }
+      // Get current user metadata
+      const currentMetadata = currentUser.user_metadata || {};
+      
+      // Prepare updated metadata
+      const updatedMetadata = {
+        ...currentMetadata,
+        first_name: updates.first_name || currentMetadata.first_name,
+        last_name: updates.last_name || currentMetadata.last_name,
+        phone: updates.phone || currentMetadata.phone,
+        birth: updates.birth || currentMetadata.birth,
+        cpf: updates.cpf || currentMetadata.cpf,
+        avatar_url: updates.avatar_url !== undefined ? updates.avatar_url : currentMetadata.avatar_url,
+        ...updates.preferences
+      };
 
-      // If user exists in database, update normally
-      const { data, error } = await supabase
-        .from('users')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
-        .select()
-        .single();
+      // Update user metadata in Supabase Auth
+      const { data, error } = await supabase.auth.updateUser({
+        data: updatedMetadata
+      });
 
       if (error) {
-        // If update fails, return updated fallback profile
-        console.error('Error updating user profile in database:', error);
-        return {
-          ...existingProfile,
-          ...updates,
-          updated_at: new Date().toISOString()
-        };
+        console.error('Error updating user profile:', error);
+        throw error;
       }
 
-      return data;
+      // Return updated profile
+      return {
+        id: data.user.id,
+        first_name: data.user.user_metadata?.first_name || '',
+        last_name: data.user.user_metadata?.last_name || '',
+        email: data.user.email || '',
+        birth: data.user.user_metadata?.birth || '',
+        phone: data.user.user_metadata?.phone || '',
+        cpf: data.user.user_metadata?.cpf || '',
+        role: data.user.user_metadata?.role || 'REGISTERED',
+        is_active: true,
+        created_at: data.user.created_at,
+        updated_at: data.user.updated_at,
+        last_login: data.user.last_sign_in_at,
+        avatar_url: data.user.user_metadata?.avatar_url || '',
+        preferences: { cpf: data.user.user_metadata?.cpf || '' }
+      };
     } catch (error) {
       console.error('Error in updateUserProfile:', error);
       throw error;
@@ -133,6 +140,11 @@ export class UserService {
    */
   static async updateUserPassword(newPassword: string): Promise<void> {
     try {
+      // Get current user session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) throw new Error('User not authenticated');
+
+      // Update password through Supabase Auth
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
@@ -148,10 +160,15 @@ export class UserService {
   }
 
   /**
-   * Update user email (requires re-authentication and email confirmation)
+   * Update user email
    */
   static async updateUserEmail(newEmail: string): Promise<{ requiresConfirmation: boolean }> {
     try {
+      // Get current user session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) throw new Error('User not authenticated');
+
+      // Update email through Supabase Auth
       const { error } = await supabase.auth.updateUser({
         email: newEmail
       });
@@ -161,7 +178,6 @@ export class UserService {
         throw error;
       }
 
-      // Email change requires confirmation via email
       return { requiresConfirmation: true };
     } catch (error) {
       console.error('Error in updateUserEmail:', error);
@@ -196,58 +212,54 @@ export class UserService {
 
   /**
    * Delivery Address Management
+   * Note: Delivery addresses are now stored in user metadata
    */
 
   /**
-   * Get user's delivery addresses
+   * Get user's delivery addresses from metadata
    */
   static async getDeliveryAddresses(): Promise<DeliveryAddress[]> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error('User not authenticated');
+      const profile = await this.getCurrentUserProfile();
+      if (!profile) throw new Error('User not authenticated');
 
-      const { data, error } = await supabase
-        .from('delivery_addresses')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('is_default', { ascending: false })
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching delivery addresses:', error);
-        throw error;
-      }
-
-      return data || [];
+      const addresses = profile.preferences?.addresses || [];
+      return Array.isArray(addresses) ? addresses : [];
     } catch (error) {
       console.error('Error in getDeliveryAddresses:', error);
-      throw error;
+      return [];
     }
   }
 
   /**
-   * Get default delivery address
+   * Get delivery addresses by user ID
+   */
+  static async getDeliveryAddressesByUserId(userId: string): Promise<DeliveryAddress[]> {
+    try {
+      // Get current user session to verify access
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) throw new Error('User not authenticated');
+
+      // Only allow users to access their own addresses
+      if (session.user.id !== userId) {
+        throw new Error('Access denied');
+      }
+
+      const addresses = session.user.user_metadata?.addresses || [];
+      return Array.isArray(addresses) ? addresses : [];
+    } catch (error) {
+      console.error('Error in getDeliveryAddressesByUserId:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get default delivery address from metadata
    */
   static async getDefaultDeliveryAddress(): Promise<DeliveryAddress | null> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase
-        .from('delivery_addresses')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_default', true)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching default delivery address:', error);
-        throw error;
-      }
-
-      return data || null;
+      const addresses = await this.getDeliveryAddresses();
+      return addresses.find(addr => addr.is_default) || null;
     } catch (error) {
       console.error('Error in getDefaultDeliveryAddress:', error);
       return null;
@@ -255,62 +267,37 @@ export class UserService {
   }
 
   /**
-   * Save delivery address (create or update)
+   * Save delivery address in metadata
    */
   static async saveDeliveryAddress(addressData: Omit<DeliveryAddress, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<DeliveryAddress> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error('User not authenticated');
+      const profile = await this.getCurrentUserProfile();
+      if (!profile) throw new Error('User not authenticated');
 
-      // First, check if we need to unset other default addresses
-      if (addressData.is_default) {
-        await supabase
-          .from('delivery_addresses')
-          .update({ is_default: false })
-          .eq('user_id', user.id);
-      }
-
-      // Check if user already has a default address
-      const existingDefault = await this.getDefaultDeliveryAddress();
-      
-      const addressToSave = {
+      const addresses = profile.preferences?.addresses || [];
+      const newAddress: DeliveryAddress = {
         ...addressData,
-        user_id: user.id,
-        // If no existing default, make this one default
-        is_default: addressData.is_default ?? !existingDefault
+        id: Date.now().toString(),
+        user_id: profile.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       };
 
-      if (existingDefault) {
-        // Update existing default address
-        const { data, error } = await supabase
-          .from('delivery_addresses')
-          .update(addressToSave)
-          .eq('id', existingDefault.id)
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Error updating delivery address:', error);
-          throw error;
-        }
-
-        return data;
-      } else {
-        // Create new address
-        const { data, error } = await supabase
-          .from('delivery_addresses')
-          .insert([addressToSave])
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Error creating delivery address:', error);
-          throw error;
-        }
-
-        return data;
+      // If setting as default, remove default from others
+      if (newAddress.is_default) {
+        addresses.forEach(addr => addr.is_default = false);
       }
+
+      const updatedAddresses = [...addresses, newAddress];
+      
+      await this.updateUserProfile({
+        preferences: {
+          ...profile.preferences,
+          addresses: updatedAddresses
+        }
+      });
+
+      return newAddress;
     } catch (error) {
       console.error('Error in saveDeliveryAddress:', error);
       throw error;
@@ -318,64 +305,26 @@ export class UserService {
   }
 
   /**
-   * Delete delivery address
+   * Delete delivery address from metadata
    */
   static async deleteDeliveryAddress(addressId: string): Promise<void> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const profile = await this.getCurrentUserProfile();
+      if (!profile) throw new Error('User not authenticated');
+
+      const addresses = profile.preferences?.addresses || [];
+      const updatedAddresses = addresses.filter(addr => addr.id !== addressId);
       
-      if (!user) throw new Error('User not authenticated');
-
-      const { error } = await supabase
-        .from('delivery_addresses')
-        .delete()
-        .eq('id', addressId)
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error('Error deleting delivery address:', error);
-        throw error;
-      }
+      await this.updateUserProfile({
+        preferences: {
+          ...profile.preferences,
+          addresses: updatedAddresses
+        }
+      });
     } catch (error) {
       console.error('Error in deleteDeliveryAddress:', error);
       throw error;
     }
   }
 
-  /**
-   * Search CEP using Brazilian postal code API
-   */
-  static async searchCEP(cep: string): Promise<{
-    cep: string;
-    address: string;
-    neighborhood: string;
-    city: string;
-    state: string;
-  } | null> {
-    try {
-      const cleanCep = cep.replace(/\D/g, '');
-      
-      if (cleanCep.length !== 8) {
-        throw new Error('CEP deve ter 8 dígitos');
-      }
-
-      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-      const data = await response.json();
-
-      if (data.erro) {
-        throw new Error('CEP não encontrado');
-      }
-
-      return {
-        cep: data.cep,
-        address: data.logradouro,
-        neighborhood: data.bairro,
-        city: data.localidade,
-        state: data.uf
-      };
-    } catch (error) {
-      console.error('Error in searchCEP:', error);
-      throw error;
-    }
-  }
 }

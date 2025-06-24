@@ -13,7 +13,53 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [birth, setBirth] = useState('');
+  const [cpf, setCpf] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Format phone number as user types
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    let formattedValue = value;
+
+    if (value.length >= 2) {
+      formattedValue = `(${value.slice(0, 2)})`;
+      if (value.length >= 3) {
+        const middlePart = value.length === 10 ? value.slice(2, 6) : value.slice(2, 7);
+        formattedValue += ` ${middlePart}`;
+        
+        const lastPart = value.length === 10 ? value.slice(6) : value.slice(7);
+        if (lastPart.length > 0) {
+          formattedValue += `-${lastPart}`;
+        }
+      }
+    }
+
+    if (formattedValue.length <= 15) { // Max length for (11) 99999-9999
+      setPhone(formattedValue);
+    }
+  };
+
+  // Format CPF as user types
+  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    let formattedValue = value;
+
+    if (value.length >= 3) {
+      formattedValue = `${value.slice(0, 3)}.${value.slice(3, 6)}`;
+      if (value.length >= 6) {
+        formattedValue += `.${value.slice(6, 9)}`;
+        if (value.length >= 9) {
+          formattedValue += `-${value.slice(9, 11)}`;
+        }
+      }
+    }
+
+    if (formattedValue.length <= 14) { // Max length for 999.999.999-99
+      setCpf(formattedValue);
+    }
+  };
   const { signUp, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -46,12 +92,47 @@ const Register = () => {
       return;
     }
 
+    // Validate phone format (Brazilian) - only if phone is provided
+    if (phone) {
+      const phoneDigits = phone.replace(/\D/g, '');
+      if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+        toast({
+          title: "Erro",
+          description: "Telefone deve ter 10 ou 11 dígitos.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    // Validate birth date (must be at least 13 years old)
+    if (birth) {
+      const birthDate = new Date(birth);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      if (age < 13 || (age === 13 && monthDiff < 0) || (age === 13 && monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        toast({
+          title: "Erro",
+          description: "Você deve ter pelo menos 13 anos para se cadastrar.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
-      const { error } = await signUp(email, password, {
+      const { error } = await signUp({
         first_name: firstName,
         last_name: lastName,
+        email: email,
+        password: password,
+        phone: phone || undefined,
+        birth: birth ? new Date(birth) : undefined,
+        cpf: cpf || undefined,
       });
       
       if (error) {
@@ -65,7 +146,7 @@ const Register = () => {
           title: "Conta criada com sucesso!",
           description: "Verifique seu email para confirmar a conta.",
         });
-        navigate('/auth/login', { state: { from: location.state?.from } });
+        // Don't navigate automatically - user needs to confirm email first
       }
     } catch (error) {
       toast({
@@ -136,6 +217,43 @@ const Register = () => {
                 placeholder="seu@email.com"
                 className="mt-1"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="cpf">CPF</Label>
+              <Input
+                id="cpf"
+                type="text"
+                value={cpf}
+                onChange={handleCpfChange}
+                placeholder="999.999.999-99"
+                className="mt-1"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="phone">Telefone</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  placeholder="(11) 99999-9999"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="birth">Data de Nascimento</Label>
+                <Input
+                  id="birth"
+                  type="date"
+                  value={birth}
+                  onChange={(e) => setBirth(e.target.value)}
+                  className="mt-1"
+                  max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                />
+              </div>
             </div>
 
             <div>
