@@ -9,11 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import axios from 'axios';
 import HeaderSurvey from '@/components/HeaderSurvey';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { useRouter } from 'next/navigation';
 
 const TypeformSurvey = () => {
@@ -67,7 +65,7 @@ const TypeformSurvey = () => {
       });
     }
   }, [user, form_id, api_token]);
-  console.log("answer:",answers);
+  // console.log("answer:",answers);
   
   // Function to format answers for Supabase storage
   const formatAnswersForSupabase = () => {
@@ -178,8 +176,8 @@ const TypeformSurvey = () => {
   }
 
   const currentField = formData.fields[currentFieldIndex];
-  console.log('Current field:', currentField);
-  console.log('All answers collected:', answers);
+  // console.log('Current field:', currentField);
+  // console.log('All answers collected:', answers);
   
   // Get the next field based on logic rules
   const getNextField = () => {
@@ -597,13 +595,14 @@ const TypeformSurvey = () => {
 
   const renderThankyouScreen = () => {
     const screen = currentThankyouScreen || formData.thankyou_screens.find(s => s.ref === 'default_tys');
-    
     return (
       <div className="space-y-6 text-primary text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">{screen.title}</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Pensando na sua saúde, melhor parar por aqui</h1>
         {screen.properties.description && (
           <p className="text-lg text-gray-600 whitespace-pre-line leading-relaxed">
-            {screen.properties.description}
+            Pelo seu histórico, recomendamos uma consulta médica presencial para um exame aprofundado.
+
+Você pode revisar suas respostas para corrigir erros. Atenção: dados errados podem prejudicar sua saúde.
           </p>
         )}
         {screen.attachment && screen.attachment.type === 'image' && (
@@ -626,8 +625,8 @@ const TypeformSurvey = () => {
           </div>
         )}
         {screen.properties.show_button && (
-          <Button className="mt-8 h-14 px-8 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-lg transition-colors">
-            {screen.properties.button_text}
+          <Button onClick={()=>router.push("/")} className="mt-8 h-14 px-8 bg-orange-500 hover:bg-orange-600 text-white text-lg font-semibold rounded-lg transition-colors">
+            Voltar à página inicial
           </Button>
         )}
       </div>
@@ -639,8 +638,6 @@ const TypeformSurvey = () => {
     
     const answer = answers[currentField.ref];
     const isRequired = currentField.validations?.required;
-    
-    if (!isRequired) return true;
     
     if (currentField.type === 'statement') return true;
     
@@ -654,7 +651,7 @@ const TypeformSurvey = () => {
     if (currentField.properties?.allow_multiple_selection) {
       return answer && answer.length > 0;
     }
-    
+    if (!isRequired) return true;
     return answer !== undefined && answer !== null && answer !== '' && answer.length > 0;
   };
 
@@ -676,7 +673,7 @@ const TypeformSurvey = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl mt-16">
         <div className="pt-4">
           {/* Debug info - Remove in production */}
-          {process.env.NODE_ENV === 'development' && (
+          {/* {process.env.NODE_ENV === 'development' && (
             <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-700">
                 <strong>Debug:</strong> {Object.keys(answers).length} answers collected
@@ -689,7 +686,7 @@ const TypeformSurvey = () => {
                 {isSubmitting ? 'Submitting...' : 'Test Submit'}
               </Button>
             </div>
-          )}
+          )} */}
 
           {/* Survey content */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 md:p-12">
