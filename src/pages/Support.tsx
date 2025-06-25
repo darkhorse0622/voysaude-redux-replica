@@ -1,6 +1,8 @@
 
+'use client';
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import HeaderSurvey from '@/components/HeaderSurvey';
 import { ArrowRight } from 'lucide-react'
@@ -8,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const Support = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleWhatsAppClick = () => {
     window.open(`https://wa.me/${user?.phone}`, '_blank');
@@ -23,13 +25,13 @@ const Support = () => {
           {/* Header */}
           <div className="flex items-center p-6 border-b border-gray-200">
             <button 
-              onClick={() => navigate('/user-dashboard')}
+              onClick={() => router.push('/user-dashboard')}
               className="mr-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
             <button
-              onClick={() => navigate('/user-dashboard')}
+              onClick={() => router.push('/user-dashboard')}
               className="text-primary font-medium hover:text-orange-500 transition-colors"
             >
               Voltar

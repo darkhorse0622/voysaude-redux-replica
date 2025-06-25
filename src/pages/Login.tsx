@@ -1,6 +1,9 @@
 
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,16 +16,16 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { signIn, user } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   
-  const from = location.state?.from || '/';
+  const from = searchParams.get('from') || '/';
 
   useEffect(() => {
     if (user) {
-      navigate(from, { replace: true });
+      router.replace(from);
     }
-  }, [user, navigate, from]);
+  }, [user, router, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +45,7 @@ const Login = () => {
           title: "Login realizado com sucesso",
           description: "Bem-vindo de volta!",
         });
-        navigate(from, { replace: true });
+        router.replace(from);
       }
     } catch (error) {
       toast({
@@ -65,7 +68,7 @@ const Login = () => {
           <p className="mt-2 text-sm text-primary">
             Ou{' '}
             <Link
-              to="/auth/register"
+              href="/auth/register"
               className="font-medium text-primary hover:text-orange-500"
             >
               crie uma nova conta
@@ -105,7 +108,7 @@ const Login = () => {
           <div className="flex items-center justify-between">
             <div className="text-sm">
               <Link
-                to="/auth/forgot-password"
+                href="/auth/forgot-password"
                 className="font-medium text-primary hover:text-orange-500"
               >
                 Esqueceu sua senha?

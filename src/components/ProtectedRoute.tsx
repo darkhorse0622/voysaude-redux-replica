@@ -1,5 +1,7 @@
+'use client';
+
 import { ReactNode, useEffect, useState } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { UserService, type UserProfile } from '@/services/userService';
 
@@ -15,7 +17,8 @@ const ProtectedRoute = ({
   redirectTo = '/auth/login'
 }: ProtectedRouteProps) => {
   const { user, loading: authLoading } = useAuth();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
 
@@ -52,7 +55,8 @@ const ProtectedRoute = ({
 
   // Redirect to login if not authenticated
   if (!user) {
-    return <Navigate to={redirectTo} state={{ from: location.pathname }} replace />;
+    router.push(`${redirectTo}?from=${encodeURIComponent(pathname)}`);
+    return null;
   }
 
   // Check role-based access if specified
@@ -68,7 +72,8 @@ const ProtectedRoute = ({
     const requiredRoleLevel = roleHierarchy[requiredRole];
 
     if (userRoleLevel < requiredRoleLevel) {
-      return <Navigate to="/unauthorized" replace />;
+      router.push('/unauthorized');
+      return null;
     }
   }
 

@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, ArrowLeft } from 'lucide-react';
 
 const Unauthorized = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -26,7 +28,7 @@ const Unauthorized = () => {
           
           <div className="flex flex-col gap-2">
             <Button 
-              onClick={() => navigate(-1)}
+              onClick={() => router.back()}
               variant="outline"
               className="w-full"
             >
@@ -35,7 +37,7 @@ const Unauthorized = () => {
             </Button>
             
             <Button 
-              onClick={() => navigate('/')}
+              onClick={() => router.push('/')}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white"
             >
               Ir para o Início

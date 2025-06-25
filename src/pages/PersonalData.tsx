@@ -1,6 +1,8 @@
 
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +13,7 @@ import { UserService, type UserProfile } from '@/services/userService';
 import HeaderSurvey from '@/components/HeaderSurvey';
 
 const PersonalData = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -28,7 +30,7 @@ const PersonalData = () => {
   useEffect(() => {
     const loadUserData = async () => {
       if (!user) {
-        navigate('/auth/login');
+        router.push('/auth/login');
         return;
       }
 
@@ -56,7 +58,7 @@ const PersonalData = () => {
     };
 
     loadUserData();
-  }, [user, navigate, toast]);
+  }, [user, router, toast]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -163,7 +165,7 @@ const PersonalData = () => {
         });
       }
 
-      navigate('/account-details');
+      router.push('/account-details');
     } catch (error) {
       toast({
         title: "Erro",
@@ -200,14 +202,14 @@ const PersonalData = () => {
           {/* Header */}
           <div className="flex items-center p-6 border-b border-gray-200">
             <button 
-              onClick={() => navigate('/account-details')}
+              onClick={() => router.push('/account-details')}
               className="mr-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
               disabled={saving}
             >
               <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
             <button
-              onClick={() => navigate('/account-details')}
+              onClick={() => router.push('/account-details')}
               className="text-primary font-medium hover:text-orange-500 transition-colors"
               disabled={saving}
             >

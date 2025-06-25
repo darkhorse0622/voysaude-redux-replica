@@ -1,4 +1,6 @@
 
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Check, CircleCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,6 +27,14 @@ const Dashboard = () => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
+
+  // Debug environment variables
+  useEffect(() => {
+    console.log('Environment variables check:');
+    console.log('TYPEFORM_ID:', process.env.NEXT_PUBLIC_TYPE_FORM_ID);
+    console.log('TYPEFORM_API_KEY:', process.env.NEXT_PUBLIC_TYPE_FORM_API_KEY ? 'Set' : 'Not set');
+    console.log('SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+  }, []);
 
   const exceptItems = [
     {

@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft, Check, AlertCircle } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -12,11 +14,11 @@ import axios from 'axios';
 import HeaderSurvey from '@/components/HeaderSurvey';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 const TypeformSurvey = () => {
-  const { user, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const { user, session, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [formData, setFormData] = useState(null);
   const [currentFieldIndex, setCurrentFieldIndex] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -27,18 +29,28 @@ const TypeformSurvey = () => {
   const [submitError, setSubmitError] = useState(null);
 
   // Load form data on component mount
-  const form_id = import.meta.env.VITE_TYPE_FROM_FORM_ID;
-  const api_token = import.meta.env.VITE_TYPE_FORM_API_KEY;
+  const form_id = process.env.NEXT_PUBLIC_TYPE_FORM_ID;
+  const api_token = process.env.NEXT_PUBLIC_TYPE_FORM_API_KEY;
 
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/auth/login', { state: { from: '/survey' } });
+      router.push('/auth/login?from=/survey');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     if (user) {
+      if (!form_id) {
+        console.error('Missing NEXT_PUBLIC_TYPE_FORM_ID environment variable');
+        return;
+      }
+      if (!api_token) {
+        console.error('Missing NEXT_PUBLIC_TYPE_FORM_API_KEY environment variable');
+        return;
+      }
+      
+      console.log('Loading Typeform:', form_id); // Debug log
       // Use the proxy endpoint instead of direct API call
       axios.get(`/api/typeform/forms/${form_id}`, {
           headers: {
@@ -50,7 +62,8 @@ const TypeformSurvey = () => {
           setFormData(response.data);
       })
       .catch(error => {
-          console.error(error);
+          console.error('Typeform API Error:', error);
+          console.error('URL attempted:', `/api/typeform/forms/${form_id}`);
       });
     }
   }, [user, form_id, api_token]);
@@ -102,21 +115,35 @@ const TypeformSurvey = () => {
         }
       };
 
-      console.log('Submitting survey response to Supabase:', surveyResponse);
-
-      const { data, error } = await (supabase as any)
-        .from('survey_responses')
-        .insert([surveyResponse])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Supabase error:', error);
-        throw new Error(error.message);
+      console.log('Submitting survey response via API:', surveyResponse);
+      // console.log('User session:', session);
+      
+      // Ensure we have a valid session
+      if (!session) {
+        throw new Error('No valid session found. Please login again.');
       }
 
-      console.log('Survey submitted successfully:', data);
-      return data;
+      // Submit via API route to avoid client-side permission issues
+      
+      const response = await fetch('/api/survey/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(surveyResponse),
+      });
+      console.log('API response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API error:', errorData);
+        throw new Error(errorData.error || 'Failed to submit survey');
+      }
+
+      const result = await response.json();
+
+      console.log('Survey submitted successfully:', result);
+      return result.data;
     } catch (error) {
       console.error('Submission failed:', error);
       setSubmitError('Failed to submit survey. Please try again.');

@@ -1,12 +1,14 @@
 
+'use client';
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, User, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import HeaderSurvey from '@/components/HeaderSurvey';
 
 const AccountDetails = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -26,7 +28,7 @@ const AccountDetails = () => {
   }
 
   if (!user) {
-    navigate('/auth/login');
+    router.push('/auth/login');
     return null;
   }
 
@@ -39,13 +41,13 @@ const AccountDetails = () => {
           {/* Header */}
           <div className="flex items-center p-6 border-b border-gray-200">
             <button 
-              onClick={() => navigate('/user-dashboard')}
+              onClick={() => router.push('/user-dashboard')}
               className="mr-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
             <button
-              onClick={() => navigate('/user-dashboard')}
+              onClick={() => router.push('/user-dashboard')}
               className="text-primary font-medium hover:text-orange-500 transition-colors"
             >
               Voltar
@@ -67,7 +69,7 @@ const AccountDetails = () => {
                   <p className="text-primary font-medium">{user?.first_name && user?.last_name ? `${user.first_name} ${user.last_name}` : 'Nome não informado'}</p>
                   <p className="text-primary">{user?.email || 'Email não informado'}</p>
                 </div>
-                <button className="mt-4 text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center" onClick={()=>navigate('/personal-data')}>
+                <button className="mt-4 text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center" onClick={()=>router.push('/personal-data')}>
                   Alterar
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
@@ -82,7 +84,7 @@ const AccountDetails = () => {
                   <h2 className="text-lg font-semibold text-primary">Endereço de entrega</h2>
                 </div>
                 <p className="text-primary mb-4">Nenhum endereço de entrega cadastrado</p>
-                <button className="text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center"  onClick={()=>navigate('/delivery-address')}>
+                <button className="text-orange-500 font-medium hover:text-orange-600 transition-colors flex items-center"  onClick={()=>router.push('/delivery-address')}>
                   Alterar
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </button>
@@ -90,7 +92,7 @@ const AccountDetails = () => {
 
               {/* Change Password */}
               <button
-                onClick={() => navigate('/change-password')}
+                onClick={() => router.push('/change-password')}
                 className="w-full flex items-center justify-between p-6 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center space-x-3">

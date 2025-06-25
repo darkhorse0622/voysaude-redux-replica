@@ -1,7 +1,9 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Menu, X, User, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { RootState } from '@/store/store';
 import { toggleMobileMenu, closeMobileMenu } from '@/store/slices/navigationSlice';
 import { Button } from '@/components/ui/button';
@@ -10,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const Header = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { isMobileMenuOpen } = useSelector((state: RootState) => state.navigation);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, signOut } = useAuth();
@@ -40,7 +42,7 @@ const Header = () => {
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso.",
       });
-      navigate('/');
+      router.push('/');
     } catch (error) {
       toast({
         title: "Erro ao fazer logout",
@@ -56,7 +58,7 @@ const Header = () => {
         <div className={`flex justify-center md:justify-start items-center h-16 ${isScrolled ? 'bg-white' : 'text-orange-10'}`}>
           {/* Logo */}
           <div className="relative flex items-center">
-            <a className={`cursor-pointer font-bold text-3xl px-8 rounded-lg text-primary`} onClick={() => navigate("/")}>
+            <a className={`cursor-pointer font-bold text-3xl px-8 rounded-lg text-primary`} onClick={() => router.push("/")}>
               voy
             </a>
           </div>
@@ -66,7 +68,7 @@ const Header = () => {
             {navigationItems.map((item) => (
               <a
                 key={item.name}
-                onClick={() => navigate(item.href)}
+                onClick={() => router.push(item.href)}
                 className={`cursor-pointer transition-colors duration-200 font-medium text-primary hover:text-orange-500`}
               >
                 {item.name}
@@ -78,7 +80,7 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-4 pr-8">
             {user ? (
               <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 cursor-pointer hover:text-orange-500" onClick={()=>navigate('/user-dashboard')}>
+                <div className="flex items-center space-x-2 cursor-pointer hover:text-orange-500" onClick={()=>router.push('/user-dashboard')}>
                   <User size={20} className="text-primary" />
                   <span className="text-primary hover:text-orange-500">{user.email}</span>
                 </div>
@@ -94,13 +96,13 @@ const Header = () => {
               <div className="flex items-center space-x-4">
                 <Button
                   variant="ghost"
-                  onClick={() => navigate('/auth/login')}
+                  onClick={() => router.push('/auth/login')}
                   className="text-primary hover:text-orange-500"
                 >
                   Entrar
                 </Button>
                 <Button
-                  onClick={() => navigate('/auth/register')}
+                  onClick={() => router.push('/auth/register')}
                   className="bg-primary text-white hover:bg-orange-500"
                 >
                   Cadastrar
@@ -136,7 +138,7 @@ const Header = () => {
                   <a
                     key={item.name}
                     onClick={() => {
-                      navigate(item.href);
+                      router.push(item.href);
                       dispatch(closeMobileMenu());
                     }}
                     className={`border-b border-b-gray-200 block px-3 py-4 font-medium transition-colors duration-200 text-primary hover:text-orange-500 cursor-pointer`}
@@ -151,7 +153,7 @@ const Header = () => {
                   </div>
                   {user ? (
                     <>
-                      <div className="border-b border-b-gray-200 block px-3 py-4 text-primary" onClick={()=>navigate('/user-dashboard')}>
+                      <div className="border-b border-b-gray-200 block px-3 py-4 text-primary" onClick={()=>router.push('/user-dashboard')}>
                         {user.email}
                       </div>
                       <a
@@ -169,7 +171,7 @@ const Header = () => {
                     <>
                       <a
                         onClick={() => {
-                          navigate('/auth/login');
+                          router.push('/auth/login');
                           dispatch(closeMobileMenu());
                         }}
                         className={`border-b border-b-gray-200 block px-3 py-4 font-medium transition-colors duration-200 text-primary hover:text-orange-500 cursor-pointer`}
@@ -179,7 +181,7 @@ const Header = () => {
                       </a>
                       <a
                         onClick={() => {
-                          navigate('/auth/register');
+                          router.push('/auth/register');
                           dispatch(closeMobileMenu());
                         }}
                         className={`border-b border-b-gray-200 block px-3 py-4 font-medium transition-colors duration-200 text-primary hover:text-orange-500 cursor-pointer`}

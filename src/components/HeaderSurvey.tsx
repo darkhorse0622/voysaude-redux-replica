@@ -1,7 +1,9 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Menu, X, User, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { RootState } from '@/store/store';
 import { toggleMobileMenu, closeMobileMenu } from '@/store/slices/navigationSlice';
 import { Button } from '@/components/ui/button';
@@ -10,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const Header = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { isMobileMenuOpen } = useSelector((state: RootState) => state.navigation);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, signOut } = useAuth();
@@ -32,7 +34,7 @@ const Header = () => {
         <div className={`flex justify-center items-center h-16 bg-white`}>
           {/* Logo */}
           <div className="relative flex items-center">
-            <a className={`cursor-pointer font-bold text-3xl px-8 rounded-lg text-primary`} onClick={() => navigate("/")}>
+            <a className={`cursor-pointer font-bold text-3xl px-8 rounded-lg text-primary`} onClick={() => router.push("/")}>
               voy
             </a>
           </div>

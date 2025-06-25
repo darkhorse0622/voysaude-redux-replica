@@ -1,6 +1,8 @@
 
+'use client';
+
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +13,7 @@ import { UserService } from '@/services/userService';
 import HeaderSurvey from '@/components/HeaderSurvey';
 
 const ChangePassword = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -88,7 +90,7 @@ const ChangePassword = () => {
         title: "Senha alterada",
         description: "Sua senha foi alterada com sucesso.",
       });
-      navigate('/account-details');
+      router.push('/account-details');
     } catch (error) {
       toast({
         title: "Erro",
@@ -116,13 +118,13 @@ const ChangePassword = () => {
           {/* Header */}
           <div className="flex items-center p-6 border-b border-gray-200">
             <button 
-              onClick={() => navigate('/account-details')}
+              onClick={() => router.push('/account-details')}
               className="mr-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
             <button
-              onClick={() => navigate('/account-details')}
+              onClick={() => router.push('/account-details')}
               className="text-primary font-medium hover:text-orange-500 transition-colors"
             >
               Voltar

@@ -1,29 +1,24 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("VITE_DATABASE_URL")
-  directUrl = env("VITE_DIRECT_URL")
+  url       = env("NEXT_DATABASE_URL")
+  directUrl = env("NEXT_DIRECT_URL")
 }
 
-// Survey Response model - stores Typeform survey responses
-// References Supabase Auth user IDs directly (no User model needed)
 model SurveyResponse {
-  id            String   @id @default(uuid()) @db.Uuid
-  user_id       String   @db.Uuid  // References Supabase Auth user.id
-  form_id       String
-  form_title    String?
-  submitted_at  DateTime @default(now()) @db.Timestamptz(6)
-  responses     Json     @default("{}")
-  metadata      Json?    @default("{}")
-  created_at    DateTime @default(now()) @db.Timestamptz(6)
-  updated_at    DateTime @default(now()) @updatedAt @db.Timestamptz(6)
-  
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id      String   @db.Uuid
+  form_id      String
+  form_title   String?
+  responses    Json     @default("{}")
+  metadata     Json?    @default("{}")
+  submitted_at DateTime @default(now()) @db.Timestamptz(6)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
   @@index([user_id])
   @@index([form_id])
   @@index([submitted_at])

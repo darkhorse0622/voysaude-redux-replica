@@ -1,6 +1,8 @@
 
+'use client';
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -59,7 +61,7 @@ const ForgotPassword = () => {
           </div>
           <div>
             <Link
-              to="/auth/login"
+              href="/auth/login"
               className="font-medium text-primary hover:text-orange-500"
             >
               Voltar ao login
@@ -106,7 +108,7 @@ const ForgotPassword = () => {
 
           <div className="text-center">
             <Link
-              to="/auth/login"
+              href="/auth/login"
               className="font-medium text-primary hover:text-orange-500"
             >
               Voltar ao login

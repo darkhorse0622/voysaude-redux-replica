@@ -1,6 +1,8 @@
 
+'use client';
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, Package, HelpCircle, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import HeaderSurvey from '@/components/HeaderSurvey';
 
 const UserDashboard = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
 
@@ -19,7 +21,7 @@ const UserDashboard = () => {
         title: "Logout realizado",
         description: "Você foi desconectado com sucesso.",
       });
-      navigate('/');
+      router.push('/');
     } catch (error) {
       toast({
         title: "Erro ao fazer logout",
@@ -45,7 +47,7 @@ const UserDashboard = () => {
             <div>
               <h2 className="text-sm font-semibold text-primary mb-4 tracking-wider">PLANOS</h2>
               <button
-                onClick={() => navigate('/survey')}
+                onClick={() => router.push('/survey')}
                 className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
@@ -61,7 +63,7 @@ const UserDashboard = () => {
               <h2 className="text-sm font-semibold text-primary mb-4 tracking-wider">CONTA</h2>
               <div className="space-y-2">
                 <button
-                  onClick={() => navigate('/support')}
+                  onClick={() => router.push('/support')}
                   className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
@@ -72,7 +74,7 @@ const UserDashboard = () => {
                 </button>
                 
                 <button
-                  onClick={() => navigate('/account-details')}
+                  onClick={() => router.push('/account-details')}
                   className="w-full flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
