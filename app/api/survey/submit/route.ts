@@ -73,6 +73,74 @@ export async function POST(request: NextRequest) {
       }
 
       console.log('Survey submitted successfully:', data);
+
+      // Send to ActivePieces webhook
+      try {
+        // Extract email and whatsapp from user metadata or responses
+        let email = '';
+        let whatsapp = '';
+        
+        // Look for email and whatsapp in the survey responses
+        Object.values(responses).forEach((response: any) => {
+          if (response.field_type === 'email') {
+            email = response.answer || '';
+          }
+          if (response.field_type === 'phone_number') {
+            whatsapp = response.answer || '';
+          }
+          // Also check for inline_group fields that might contain email/phone
+          if (response.field_type === 'inline_group' && typeof response.answer === 'object') {
+            Object.values(response.answer).forEach((subAnswer: any) => {
+              if (typeof subAnswer === 'string') {
+                if (subAnswer.includes('@')) email = subAnswer;
+                if (/^\(?[\d\s\-\+\(\)]+\)?$/.test(subAnswer)) whatsapp = subAnswer;
+              }
+            });
+          }
+        });
+
+        // Format data according to your specification
+        const formattedData = Object.entries(responses).map(([fieldRef, response]: [string, any]) => ({
+          question: response.title || '',
+          question_id: response.field_id || fieldRef,
+          answer: Array.isArray(response.answer) 
+            ? response.answer.map((ans: any) => ({
+                text: typeof ans === 'string' ? ans : ans.title || ans.label || String(ans),
+                id: typeof ans === 'object' ? ans.id || ans.ref || fieldRef : fieldRef
+              }))
+            : [{
+                text: typeof response.answer === 'string' ? response.answer : String(response.answer),
+                id: response.field_id || fieldRef
+              }]
+        }));
+
+        const webhookPayload = {
+          email,
+          whatsapp,
+          created_at: data.submitted_at,
+          data: formattedData
+        };
+
+        console.log('Sending to ActivePieces webhook:', webhookPayload);
+
+        const webhookResponse = await fetch('https://cloud.activepieces.com/api/v1/webhooks/r4mUwKVV5xl8bf3EPEsPp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(webhookPayload)
+        });
+
+        if (webhookResponse.ok) {
+          console.log('Successfully sent to ActivePieces webhook');
+        } else {
+          console.error('Failed to send to ActivePieces webhook:', webhookResponse.status, webhookResponse.statusText);
+        }
+      } catch (webhookError) {
+        console.error('Error sending to ActivePieces webhook:', webhookError);
+        // Don't fail the main request if webhook fails
+      }
+
       return NextResponse.json({ success: true, data });
       
     } catch (dbError) {
